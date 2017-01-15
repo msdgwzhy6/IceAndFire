@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#607d8b</color>
+    <color name="colorPrimaryDark">#546e7a</color>
+    <color name="colorAccent">#40c4ff</color>
+
+    <color name="list_view_item_pressed">#33FF4081</color>
+
+    <color name="transparent">#00000000</color>
+    <color name="translucent">#44000000</color>
+    <color name="white">#ffffffff</color>
+    <color name="black">#ff000000</color>
+    <color name="red">#ffff0000</color>
+    <color name="green">#ff00ff00</color>
+    <color name="blue">#ff0000ff</color>
+    <color name="dark">#272636</color>
+    <color name="light">#ecf0f1</color>
+    <color name="bluegray">#B0BEC5</color>
+    <color name="darkbluegray">#263238</color>
+
+    <!-- Theme colors -->
+    <color name="statusBarColor">#2a36b1</color>        <!-- 900 -->
+    <color name="windowBackground">#fff</color>     <!-- 300 -->
+    <color name="navigationBarColor">#455ede</color>    <!-- 700 -->
+    <color name="bg_blue">#738ffe</color>    <!-- 400 -->
+    <color name="fg_blue">#e7e9fd</color>    <!-- 50 -->
+    <color name="control_normal_blue">#e7e9fd</color>    <!-- 50 -->
+    <color name="control_highlight_blue">#afbfff</color>    <!-- 200 -->
+    <color name="control_activated_blue">#4d69ff</color>    <!-- A700 -->
+    <color name="button_normal_blue">#738ffe</color> <!-- 400 -->
+    <color name="list_background">#F2F2F2</color>
+    <color name="list_background_normal">#FCFCFC</color>
+    <color name="list_background_secondary_normal">#F2F2F2</color>
+</resources>
