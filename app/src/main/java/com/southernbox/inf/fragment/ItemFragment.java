@@ -78,6 +78,10 @@ public class ItemFragment extends Fragment {
     }
 
     private void loadDatas() {
+        if(TextUtils.isEmpty(jsonUrl)){
+            mSwipeRefreshLayout.setRefreshing(false);
+            return;
+        }
         // 优先加载本地缓存数据
         String cacheData = CacheUtils.getString(mContext, jsonUrl,
                 null);

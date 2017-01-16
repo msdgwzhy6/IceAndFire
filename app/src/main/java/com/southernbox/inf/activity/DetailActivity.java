@@ -44,7 +44,7 @@ public class DetailActivity extends AppCompatActivity {
         bitmapUtils.configDefaultShowOriginal(false);
         bitmapUtils.configDefaultBitmapMaxSize(480, 480);
         bitmapUtils.display(mImageView, ServerAPI.BASE_URL + content.pic);
-        mWebView.loadUrl(ServerAPI.GITHUB_HTML_PREVIEW + ServerAPI.BASE_URL + content.htmlUrl);
+        mWebView.loadUrl(ServerAPI.BASE_URL + content.htmlUrl);
 
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
