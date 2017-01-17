@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.lidroid.xutils.BitmapUtils;
+import com.bumptech.glide.Glide;
 import com.southernbox.inf.R;
 import com.southernbox.inf.activity.DetailActivity;
 import com.southernbox.inf.activity.MainActivity;
@@ -24,18 +24,17 @@ import java.util.List;
 
 /**
  * Created by SouthernBox on 2016/3/27.
+ * 首页列表适配器
  */
 public class MainAdapter extends RecyclerView.Adapter {
 
     private Context mContext;
     private MainActivity mainActivity;
     private List<ContentBean.Content> datas;
-    private BitmapUtils bitmapUtils;
 
     public MainAdapter(Context context) {
         this.mContext = context;
         mainActivity = (MainActivity) mContext;
-        bitmapUtils = new BitmapUtils(mContext);
     }
 
     @Override
@@ -59,10 +58,11 @@ public class MainAdapter extends RecyclerView.Adapter {
         viewHolder.holderNameTv.setText(bean.name);
         viewHolder.holderIntroTv.setText(bean.intro);
 
-        bitmapUtils.configDefaultLoadingImage(R.drawable.icon_image_loading);
-        bitmapUtils.configDefaultShowOriginal(false);
-        bitmapUtils.configDefaultBitmapMaxSize(480, 480);
-        bitmapUtils.display(viewHolder.holderPicIv, ServerAPI.BASE_URL + bean.pic);
+        Glide
+                .with(mContext)
+                .load(ServerAPI.BASE_URL + bean.pic)
+                .centerCrop()
+                .into(viewHolder.holderPicIv);
 
         final View itemRoot = viewHolder.itemView;
         itemRoot.setOnClickListener(new View.OnClickListener() {

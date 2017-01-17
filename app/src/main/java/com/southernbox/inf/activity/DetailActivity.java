@@ -8,7 +8,7 @@ import android.view.View;
 import android.webkit.WebView;
 import android.widget.ImageView;
 
-import com.lidroid.xutils.BitmapUtils;
+import com.bumptech.glide.Glide;
 import com.southernbox.inf.R;
 import com.southernbox.inf.bean.ContentBean;
 import com.southernbox.inf.js.Js2Java;
@@ -40,10 +40,13 @@ public class DetailActivity extends AppCompatActivity {
 
     public void initData() {
         mToolbar.setTitle(content.name);
-        BitmapUtils bitmapUtils = new BitmapUtils(this);
-        bitmapUtils.configDefaultShowOriginal(false);
-        bitmapUtils.configDefaultBitmapMaxSize(480, 480);
-        bitmapUtils.display(mImageView, ServerAPI.BASE_URL + content.pic);
+
+        Glide
+                .with(this)
+                .load(ServerAPI.BASE_URL + content.pic)
+                .centerCrop()
+                .into(mImageView);
+
         mWebView.loadUrl(ServerAPI.BASE_URL + content.htmlUrl);
 
         setSupportActionBar(mToolbar);
