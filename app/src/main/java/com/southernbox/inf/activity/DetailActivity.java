@@ -44,7 +44,8 @@ public class DetailActivity extends AppCompatActivity {
         Glide
                 .with(this)
                 .load(ServerAPI.BASE_URL + content.pic)
-                .centerCrop()
+                .override(480, 270)
+                .crossFade()
                 .into(mImageView);
 
         mWebView.loadUrl(ServerAPI.BASE_URL + content.htmlUrl);

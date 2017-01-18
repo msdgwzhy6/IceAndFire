@@ -19,8 +19,7 @@
             android:layout_height="200dp"
             android:layout_gravity="center_horizontal"
             android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:src="@drawable/es" />
+            android:scaleType="centerCrop" />
 
         <LinearLayout
             android:id="@+id/personItem_text_ll"

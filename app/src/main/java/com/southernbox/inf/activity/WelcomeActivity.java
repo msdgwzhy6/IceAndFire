@@ -34,7 +34,7 @@ public class WelcomeActivity extends Activity {
             @Override
             public void onAnimationEnd(Animation animation) {
                 SystemClock.sleep(500);
-                startActivity(new Intent(getApplicationContext(),
+                startActivity(new Intent(WelcomeActivity.this,
                         MainActivity.class));
                 finish();
             }

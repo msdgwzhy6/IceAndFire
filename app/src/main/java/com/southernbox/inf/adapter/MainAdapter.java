@@ -2,7 +2,7 @@ package com.southernbox.inf.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
@@ -61,7 +61,8 @@ public class MainAdapter extends RecyclerView.Adapter {
         Glide
                 .with(mContext)
                 .load(ServerAPI.BASE_URL + bean.pic)
-                .centerCrop()
+                .override(480,270)
+                .crossFade()
                 .into(viewHolder.holderPicIv);
 
         final View itemRoot = viewHolder.itemView;
@@ -84,12 +85,7 @@ public class MainAdapter extends RecyclerView.Adapter {
                 mainActivity, pairs
         );
 
-        //SDK大于21才有转场动画效果
-        if (Build.VERSION.SDK_INT >= 21) {
-            mainActivity.startActivity(intent, options.toBundle());
-        } else {
-            mainActivity.startActivity(intent);
-        }
+        ActivityCompat.startActivity(mContext, intent, options.toBundle());
     }
 
     @Override
