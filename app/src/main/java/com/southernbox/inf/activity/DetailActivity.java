@@ -1,5 +1,6 @@
 package com.southernbox.inf.activity;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +21,7 @@ import com.southernbox.inf.util.ServerAPI;
  * 详情页面
  */
 
+@SuppressLint("SetJavaScriptEnabled")
 public class DetailActivity extends AppCompatActivity {
 
     private ContentBean.Content content;

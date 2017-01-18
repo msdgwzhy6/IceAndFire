@@ -75,6 +75,7 @@ public class MainAdapter extends RecyclerView.Adapter {
         });
     }
 
+    @SuppressWarnings("unchecked")
     private void onItemClick(ContentBean.Content bean, MyViewHolder holder) {
         Intent intent = new Intent(mContext, DetailActivity.class);
         intent.putExtra("content", bean);
