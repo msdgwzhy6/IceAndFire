@@ -4,15 +4,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.webkit.JavascriptInterface;
 
+import com.southernbox.inf.activity.DetailActivity;
 import com.southernbox.inf.bean.ContentBean;
 import com.southernbox.inf.fragment.ItemFragment;
-import com.southernbox.inf.activity.DetailActivity;
-import com.southernbox.inf.activity.MainActivity;
 import com.southernbox.inf.pager.ItemViewPager;
 
 /**
  * Created by SouthernBox on 2016/4/1.
+ * 实现和JavaScript交互
  */
+
 public class Js2Java {
     Context mContext;
     ContentBean.Content bean;

@@ -11,17 +11,19 @@ import android.widget.ImageView;
 
 import com.southernbox.inf.R;
 
-public class WelcomeActivity extends Activity {
+/**
+ * Created SouthernBox on 2016/3/27.
+ * 启动页面
+ */
 
-    // @ViewInject(R.id.guide_valarMorghulis_iv)
-    // private ImageView mValarMorghulisIv;
+public class IndexActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
-        ImageView mValarMorghulisIv = (ImageView) findViewById(R.id.guide_valarMorghulis_iv);
+        ImageView ivIndex = (ImageView) findViewById(R.id.iv_index);
         Animation animation = AnimationUtils.loadAnimation(this,
                 R.anim.anim_valar_morghulis);
         animation.setAnimationListener(new AnimationListener() {
@@ -34,7 +36,7 @@ public class WelcomeActivity extends Activity {
             @Override
             public void onAnimationEnd(Animation animation) {
                 SystemClock.sleep(500);
-                startActivity(new Intent(WelcomeActivity.this,
+                startActivity(new Intent(IndexActivity.this,
                         MainActivity.class));
                 finish();
             }
@@ -46,7 +48,7 @@ public class WelcomeActivity extends Activity {
 
         });
         SystemClock.sleep(200);
-        mValarMorghulisIv.startAnimation(animation);
+        ivIndex.startAnimation(animation);
 
     }
 

@@ -2,15 +2,16 @@ package com.southernbox.inf.activity;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.MenuItem;
 
 import com.android.volley.RequestQueue;
@@ -28,13 +29,17 @@ import com.southernbox.inf.util.ToastUtil;
 
 import java.util.ArrayList;
 
+/**
+ * Created SouthernBox on 2016/3/27.
+ * 主页
+ */
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private Context mContext;
     private Toolbar mToolbar;
     private DrawerLayout drawer;
     private OptionBean jsonBean;
-    private RequestQueue mQueue;
     public static ArrayList<ItemViewPager> viewPagers;
 
     @Override
@@ -46,7 +51,7 @@ public class MainActivity extends AppCompatActivity
         initNavigationView();
 
         mContext = this;
-        mQueue = Volley.newRequestQueue(this);
+        RequestQueue mQueue = Volley.newRequestQueue(this);
 
         // 优先加载本地缓存数据
         String cacheData = CacheUtils.getString(mContext, ServerAPI.OPTION_URL,
@@ -74,14 +79,17 @@ public class MainActivity extends AppCompatActivity
     private void initToolBar() {
         mToolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     private void initDrawerLayout() {
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
     }
 
@@ -102,7 +110,7 @@ public class MainActivity extends AppCompatActivity
 
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+    // Inflate the menu; this adds items to the action bar if it is present.
 //        getMenuInflater().inflate(R.menu.main, menu);
 //        return true;
 //    }
@@ -116,7 +124,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initViewPager() {
-        viewPagers = new ArrayList<ItemViewPager>();
+        viewPagers = new ArrayList<>();
         int size = jsonBean.data.size();
         for (int i = 0; i < size; i++) {
             viewPagers.add(new ItemViewPager(mContext, jsonBean.data.get(i)));
@@ -141,7 +149,7 @@ public class MainActivity extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int position = 0;
 
         // Handle navigation view item clicks here.

@@ -27,8 +27,10 @@ import com.southernbox.inf.util.MyStringRequest;
 import com.southernbox.inf.util.ServerAPI;
 
 /**
- * Fragment界面
+ * Created by SouthernBox on 2016/3/27.
+ * 首页Fragment
  */
+
 public class ItemFragment extends Fragment {
     private Context mContext;
     private String jsonUrl;
@@ -50,7 +52,7 @@ public class ItemFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (rootView == null) {
-            rootView = LayoutInflater.from(mContext).inflate(R.layout.fragment_home, null);
+            rootView = LayoutInflater.from(mContext).inflate(R.layout.fragment_home, container, false);
 
             initSwipeRefreshLayout();
             initRecyclerView();
@@ -78,7 +80,7 @@ public class ItemFragment extends Fragment {
     }
 
     private void loadDatas() {
-        if(TextUtils.isEmpty(jsonUrl)){
+        if (TextUtils.isEmpty(jsonUrl)) {
             mSwipeRefreshLayout.setRefreshing(false);
             return;
         }
@@ -119,7 +121,7 @@ public class ItemFragment extends Fragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    adapter.setDatas(jsonBean.data);
+                    adapter.setData(jsonBean.data);
                     mSwipeRefreshLayout.setRefreshing(false);
                 }
             });

@@ -2,11 +2,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    tools:context=".WelcomeActivity" >
+    android:gravity="center">
 
     <ImageView
-        android:id="@+id/guide_valarMorghulis_iv"
+        android:id="@+id/iv_index"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:src="@drawable/valar_morghulis"

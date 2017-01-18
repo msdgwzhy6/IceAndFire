@@ -1,6 +1,7 @@
 package com.southernbox.inf.activity;
 
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
@@ -13,6 +14,11 @@ import com.southernbox.inf.R;
 import com.southernbox.inf.bean.ContentBean;
 import com.southernbox.inf.js.Js2Java;
 import com.southernbox.inf.util.ServerAPI;
+
+/**
+ * Created SouthernBox on 2016/3/27.
+ * 详情页面
+ */
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -51,7 +57,10 @@ public class DetailActivity extends AppCompatActivity {
         mWebView.loadUrl(ServerAPI.BASE_URL + content.htmlUrl);
 
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

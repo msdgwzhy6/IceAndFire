@@ -7,9 +7,11 @@ import android.support.v4.app.FragmentPagerAdapter;
 import java.util.ArrayList;
 
 /**
- * ViewPager适配器
+ * Created by SouthernBox on 2016/3/27.
+ * 首页ViewPager适配器
  */
-public class MyFragmentPagerAdapter extends FragmentPagerAdapter{
+
+public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 
     private ArrayList<Fragment> fragments;
     private String[] titles;
@@ -38,7 +40,6 @@ public class MyFragmentPagerAdapter extends FragmentPagerAdapter{
         return fragments.size();
     }
 
-    // tablayout显示时用到此方法
     @Override
     public CharSequence getPageTitle(int position) {
         return titles[position];

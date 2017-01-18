@@ -26,11 +26,12 @@ import java.util.List;
  * Created by SouthernBox on 2016/3/27.
  * 首页列表适配器
  */
+
 public class MainAdapter extends RecyclerView.Adapter {
 
     private Context mContext;
     private MainActivity mainActivity;
-    private List<ContentBean.Content> datas;
+    private List<ContentBean.Content> data;
 
     public MainAdapter(Context context) {
         this.mContext = context;
@@ -53,7 +54,7 @@ public class MainAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         final MyViewHolder viewHolder = (MyViewHolder) holder;
-        final ContentBean.Content bean = datas.get(position);
+        final ContentBean.Content bean = data.get(position);
 
         viewHolder.holderNameTv.setText(bean.name);
         viewHolder.holderIntroTv.setText(bean.intro);
@@ -61,7 +62,7 @@ public class MainAdapter extends RecyclerView.Adapter {
         Glide
                 .with(mContext)
                 .load(ServerAPI.BASE_URL + bean.pic)
-                .override(480,270)
+                .override(480, 270)
                 .crossFade()
                 .into(viewHolder.holderPicIv);
 
@@ -74,7 +75,7 @@ public class MainAdapter extends RecyclerView.Adapter {
         });
     }
 
-    public void onItemClick(ContentBean.Content bean, MyViewHolder holder) {
+    private void onItemClick(ContentBean.Content bean, MyViewHolder holder) {
         Intent intent = new Intent(mContext, DetailActivity.class);
         intent.putExtra("content", bean);
 
@@ -90,7 +91,7 @@ public class MainAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return datas == null ? 0 : datas.size();
+        return data == null ? 0 : data.size();
     }
 
     private class MyViewHolder extends RecyclerView.ViewHolder {
@@ -99,13 +100,13 @@ public class MainAdapter extends RecyclerView.Adapter {
         TextView holderIntroTv;
         LinearLayout holderTextTv;
 
-        public MyViewHolder(View itemView) {
+        MyViewHolder(View itemView) {
             super(itemView);
         }
     }
 
-    public void setDatas(List<ContentBean.Content> datas) {
-        this.datas = datas;
+    public void setData(List<ContentBean.Content> data) {
+        this.data = data;
         notifyDataSetChanged();
     }
 }

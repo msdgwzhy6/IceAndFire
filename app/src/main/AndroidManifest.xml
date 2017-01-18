@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.southernbox.inf.activity.WelcomeActivity"
+            android:name="com.southernbox.inf.activity.IndexActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
             <intent-filter>

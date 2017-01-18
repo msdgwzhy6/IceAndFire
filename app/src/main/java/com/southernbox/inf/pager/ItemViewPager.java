@@ -17,33 +17,33 @@ import java.util.ArrayList;
 
 /**
  * Created by SouthernBox on 2016/3/28.
+ * 首页ViewPager
  */
+
 public class ItemViewPager {
-    private Context mContext;
     private Toolbar mToolbar;
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
-    public ArrayList<Fragment> fragments;
+    private ArrayList<Fragment> fragments;
     private String[] titles;
-    public OptionBean.Option option;
+    private OptionBean.Option option;
     private MainActivity mainActivity;
 
     public ItemViewPager(Context mContext, OptionBean.Option option) {
-        this.mContext = mContext;
         this.option = option;
         mainActivity = (MainActivity) mContext;
         initView();
     }
 
-    public void initView() {
+    private void initView() {
         mToolbar = (Toolbar) mainActivity.findViewById(R.id.main_toolbar);
         mTabLayout = (TabLayout) mainActivity.findViewById(R.id.tab_layout);
         mViewPager = (ViewPager) mainActivity.findViewById(R.id.view_pager);
         initFragment();
     }
 
-    public void initFragment() {
-        fragments = new ArrayList<Fragment>();
+    private void initFragment() {
+        fragments = new ArrayList<>();
         int size = option.secondOptionList.size();
         titles = new String[size];
         for (int i = 0; i < size; i++) {

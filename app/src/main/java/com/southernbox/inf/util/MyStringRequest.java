@@ -9,7 +9,9 @@ import java.io.UnsupportedEncodingException;
 
 /**
  * Created by SouthernBox on 2016/3/28.
+ * 网络请求
  */
+
 public class MyStringRequest extends StringRequest {
 
     public MyStringRequest(String url, Response.Listener<String> listener,
