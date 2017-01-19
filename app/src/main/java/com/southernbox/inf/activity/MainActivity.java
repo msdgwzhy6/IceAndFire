@@ -24,10 +24,16 @@ import com.southernbox.inf.bean.OptionBean;
 import com.southernbox.inf.pager.ItemViewPager;
 import com.southernbox.inf.util.CacheUtils;
 import com.southernbox.inf.util.MyStringRequest;
+import com.southernbox.inf.util.RequestServes;
 import com.southernbox.inf.util.ServerAPI;
 import com.southernbox.inf.util.ToastUtil;
 
 import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Retrofit;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 /**
  * Created SouthernBox on 2016/3/27.
@@ -74,6 +80,33 @@ public class MainActivity extends AppCompatActivity
             }
         });
         mQueue.add(stringRequest);
+
+//        Retrofit retrofit = new Retrofit.Builder()
+//                .baseUrl(ServerAPI.BASE_URL+"/")
+//                //增加返回值为String的支持
+//                .addConverterFactory(ScalarsConverterFactory.create())
+////                //增加返回值为Gson的支持(以实体类返回)
+////                .addConverterFactory(GsonConverterFactory.create())
+////                //增加返回值为Oservable<T>的支持
+////                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+//                .build();
+//
+//        RequestServes requestServes = retrofit.create(RequestServes.class);//这里采用的是Java的动态代理模式
+//        Call<String> call = requestServes.getString();
+//
+//        call.enqueue(new Callback<String>() {
+//            @Override
+//            public void onResponse(Call<String> call, retrofit2.Response<String> response) {
+//                String responseString = response.body();
+//                CacheUtils.putString(mContext, ServerAPI.OPTION_URL, responseString);
+//                processData(responseString);
+//            }
+//
+//            @Override
+//            public void onFailure(Call<String> call, Throwable t) {
+//                ToastUtil.toastShow(mContext, "网络连接失败");
+//            }
+//        });
     }
 
     private void initToolBar() {
