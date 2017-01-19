@@ -13,18 +13,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.southernbox.inf.R;
 import com.southernbox.inf.adapter.MainAdapter;
 import com.southernbox.inf.bean.ContentBean;
 import com.southernbox.inf.util.CacheUtils;
 import com.southernbox.inf.util.Dp2PxUtil;
-import com.southernbox.inf.util.MyStringRequest;
+import com.southernbox.inf.util.RequestServes;
 import com.southernbox.inf.util.ServerAPI;
+import com.southernbox.inf.util.ToastUtil;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Retrofit;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 /**
  * Created by SouthernBox on 2016/3/27.
@@ -36,7 +38,6 @@ public class ItemFragment extends Fragment {
     private String jsonUrl;
     private View rootView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private RequestQueue mQueue;
     private MainAdapter adapter;
     public ContentBean jsonBean;
 
@@ -45,7 +46,9 @@ public class ItemFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mContext = getActivity();
         jsonUrl = getArguments().getString("json_url");
-        mQueue = Volley.newRequestQueue(mContext);
+        if (!TextUtils.isEmpty(jsonUrl) && jsonUrl.length() > 0) {
+            jsonUrl = jsonUrl.substring(1, jsonUrl.length());
+        }
     }
 
     @Nullable
@@ -91,27 +94,34 @@ public class ItemFragment extends Fragment {
             processData(cacheData);
         }
 
-        // 从网络加载数据
-        MyStringRequest stringRequest = new MyStringRequest(ServerAPI.BASE_URL + jsonUrl, new Response.Listener<String>() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(ServerAPI.BASE_URL + "/")
+                //增加返回值为String的支持
+                .addConverterFactory(ScalarsConverterFactory.create())
+//                //增加返回值为Gson的支持(以实体类返回)
+//                .addConverterFactory(GsonConverterFactory.create())
+//                //增加返回值为Oservable<T>的支持
+//                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .build();
+
+        RequestServes requestServes = retrofit.create(RequestServes.class);//这里采用的是Java的动态代理模式
+        Call<String> call = requestServes.getPerson(jsonUrl);
+
+        call.enqueue(new Callback<String>() {
             @Override
-            public void onResponse(String s) {
-                CacheUtils.putString(mContext, jsonUrl, s);
-                if (!TextUtils.isEmpty(s)) {
-                    processData(s);
+            public void onResponse(Call<String> call, retrofit2.Response<String> response) {
+                String responseString = response.body();
+                CacheUtils.putString(mContext, jsonUrl, responseString);
+                if (!TextUtils.isEmpty(responseString)) {
+                    processData(responseString);
                 }
             }
-        }, new Response.ErrorListener() {
+
             @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mSwipeRefreshLayout.setRefreshing(false);
-                    }
-                });
+            public void onFailure(Call<String> call, Throwable t) {
+                ToastUtil.toastShow(mContext, "网络连接失败");
             }
         });
-        mQueue.add(stringRequest);
     }
 
     private void processData(String json) {

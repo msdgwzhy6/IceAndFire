@@ -14,16 +14,11 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.southernbox.inf.R;
 import com.southernbox.inf.bean.OptionBean;
 import com.southernbox.inf.pager.ItemViewPager;
 import com.southernbox.inf.util.CacheUtils;
-import com.southernbox.inf.util.MyStringRequest;
 import com.southernbox.inf.util.RequestServes;
 import com.southernbox.inf.util.ServerAPI;
 import com.southernbox.inf.util.ToastUtil;
@@ -57,7 +52,6 @@ public class MainActivity extends AppCompatActivity
         initNavigationView();
 
         mContext = this;
-        RequestQueue mQueue = Volley.newRequestQueue(this);
 
         // 优先加载本地缓存数据
         String cacheData = CacheUtils.getString(mContext, ServerAPI.OPTION_URL,
@@ -66,47 +60,32 @@ public class MainActivity extends AppCompatActivity
             processData(cacheData);
         }
 
-        // 从网络加载数据
-        MyStringRequest stringRequest = new MyStringRequest(ServerAPI.OPTION_URL, new Response.Listener<String>() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(ServerAPI.BASE_URL + "/")
+                //增加返回值为String的支持
+                .addConverterFactory(ScalarsConverterFactory.create())
+//                //增加返回值为Gson的支持(以实体类返回)
+//                .addConverterFactory(GsonConverterFactory.create())
+//                //增加返回值为Oservable<T>的支持
+//                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .build();
+
+        RequestServes requestServes = retrofit.create(RequestServes.class);//这里采用的是Java的动态代理模式
+        Call<String> call = requestServes.getOption();
+
+        call.enqueue(new Callback<String>() {
             @Override
-            public void onResponse(String s) {
-                CacheUtils.putString(mContext, ServerAPI.OPTION_URL, s);
-                processData(s);
+            public void onResponse(Call<String> call, retrofit2.Response<String> response) {
+                String responseString = response.body();
+                CacheUtils.putString(mContext, ServerAPI.OPTION_URL, responseString);
+                processData(responseString);
             }
-        }, new Response.ErrorListener() {
+
             @Override
-            public void onErrorResponse(VolleyError volleyError) {
+            public void onFailure(Call<String> call, Throwable t) {
                 ToastUtil.toastShow(mContext, "网络连接失败");
             }
         });
-        mQueue.add(stringRequest);
-
-//        Retrofit retrofit = new Retrofit.Builder()
-//                .baseUrl(ServerAPI.BASE_URL+"/")
-//                //增加返回值为String的支持
-//                .addConverterFactory(ScalarsConverterFactory.create())
-////                //增加返回值为Gson的支持(以实体类返回)
-////                .addConverterFactory(GsonConverterFactory.create())
-////                //增加返回值为Oservable<T>的支持
-////                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-//                .build();
-//
-//        RequestServes requestServes = retrofit.create(RequestServes.class);//这里采用的是Java的动态代理模式
-//        Call<String> call = requestServes.getString();
-//
-//        call.enqueue(new Callback<String>() {
-//            @Override
-//            public void onResponse(Call<String> call, retrofit2.Response<String> response) {
-//                String responseString = response.body();
-//                CacheUtils.putString(mContext, ServerAPI.OPTION_URL, responseString);
-//                processData(responseString);
-//            }
-//
-//            @Override
-//            public void onFailure(Call<String> call, Throwable t) {
-//                ToastUtil.toastShow(mContext, "网络连接失败");
-//            }
-//        });
     }
 
     private void initToolBar() {
@@ -143,7 +122,6 @@ public class MainActivity extends AppCompatActivity
 
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
-    // Inflate the menu; this adds items to the action bar if it is present.
 //        getMenuInflater().inflate(R.menu.main, menu);
 //        return true;
 //    }
