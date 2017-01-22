@@ -14,14 +14,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.southernbox.inf.R;
 import com.southernbox.inf.adapter.MainAdapter;
-import com.southernbox.inf.bean.ContentBean;
+import com.southernbox.inf.entity.Content;
 import com.southernbox.inf.util.CacheUtils;
 import com.southernbox.inf.util.Dp2PxUtil;
 import com.southernbox.inf.util.RequestServes;
 import com.southernbox.inf.util.ServerAPI;
 import com.southernbox.inf.util.ToastUtil;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -39,7 +42,7 @@ public class ItemFragment extends Fragment {
     private View rootView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private MainAdapter adapter;
-    public ContentBean jsonBean;
+    public List<Content> contentList;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -126,12 +129,13 @@ public class ItemFragment extends Fragment {
 
     private void processData(String json) {
         Gson gson = new Gson();
-        this.jsonBean = gson.fromJson(json, ContentBean.class);
-        if (jsonBean != null) {
+        contentList = gson.fromJson(json, new TypeToken<List<Content>>() {
+        }.getType());
+        if (contentList != null) {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    adapter.setData(jsonBean.data);
+                    adapter.setData(contentList);
                     mSwipeRefreshLayout.setRefreshing(false);
                 }
             });

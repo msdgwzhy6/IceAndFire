@@ -15,8 +15,9 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.southernbox.inf.R;
-import com.southernbox.inf.bean.OptionBean;
+import com.southernbox.inf.entity.Option;
 import com.southernbox.inf.pager.ItemViewPager;
 import com.southernbox.inf.util.CacheUtils;
 import com.southernbox.inf.util.RequestServes;
@@ -24,6 +25,7 @@ import com.southernbox.inf.util.ServerAPI;
 import com.southernbox.inf.util.ToastUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -40,7 +42,7 @@ public class MainActivity extends AppCompatActivity
     private Context mContext;
     private Toolbar mToolbar;
     private DrawerLayout drawer;
-    private OptionBean jsonBean;
+    private List<Option> optionList;
     public static ArrayList<ItemViewPager> viewPagers;
 
     @Override
@@ -128,17 +130,18 @@ public class MainActivity extends AppCompatActivity
 
     private void processData(String json) {
         Gson gson = new Gson();
-        this.jsonBean = gson.fromJson(json, OptionBean.class);
-        if (jsonBean != null) {
+        optionList = gson.fromJson(json, new TypeToken<List<Option>>() {
+        }.getType());
+        if (optionList != null) {
             initViewPager();
         }
     }
 
     private void initViewPager() {
         viewPagers = new ArrayList<>();
-        int size = jsonBean.data.size();
+        int size = optionList.size();
         for (int i = 0; i < size; i++) {
-            viewPagers.add(new ItemViewPager(mContext, jsonBean.data.get(i)));
+            viewPagers.add(new ItemViewPager(mContext, optionList.get(i)));
         }
         viewPagers.get(0).initData();
     }

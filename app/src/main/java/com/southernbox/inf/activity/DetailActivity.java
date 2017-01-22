@@ -12,7 +12,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.southernbox.inf.R;
-import com.southernbox.inf.bean.ContentBean;
+import com.southernbox.inf.entity.Content;
 import com.southernbox.inf.js.Js2Java;
 import com.southernbox.inf.util.ServerAPI;
 
@@ -24,7 +24,7 @@ import com.southernbox.inf.util.ServerAPI;
 @SuppressLint("SetJavaScriptEnabled")
 public class DetailActivity extends AppCompatActivity {
 
-    private ContentBean.Content content;
+    private Content content;
     private Toolbar mToolbar;
     private ImageView mImageView;
     private WebView mWebView;
@@ -33,7 +33,7 @@ public class DetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-        content = (ContentBean.Content) getIntent().getSerializableExtra("content");
+        content = (Content) getIntent().getSerializableExtra("content");
         initView();
         initData();
     }
@@ -47,16 +47,16 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     public void initData() {
-        mToolbar.setTitle(content.name);
+        mToolbar.setTitle(content.getName());
 
         Glide
                 .with(this)
-                .load(ServerAPI.BASE_URL + content.pic)
+                .load(ServerAPI.BASE_URL + content.getPic())
                 .override(480, 270)
                 .crossFade()
                 .into(mImageView);
 
-        mWebView.loadUrl(ServerAPI.BASE_URL + content.htmlUrl);
+        mWebView.loadUrl(ServerAPI.BASE_URL + content.getHtmlUrl());
 
         setSupportActionBar(mToolbar);
         ActionBar actionBar = getSupportActionBar();

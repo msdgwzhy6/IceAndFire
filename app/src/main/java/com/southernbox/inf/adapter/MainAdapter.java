@@ -17,7 +17,7 @@ import com.bumptech.glide.Glide;
 import com.southernbox.inf.R;
 import com.southernbox.inf.activity.DetailActivity;
 import com.southernbox.inf.activity.MainActivity;
-import com.southernbox.inf.bean.ContentBean;
+import com.southernbox.inf.entity.Content;
 import com.southernbox.inf.util.ServerAPI;
 
 import java.util.List;
@@ -31,7 +31,7 @@ public class MainAdapter extends RecyclerView.Adapter {
 
     private Context mContext;
     private MainActivity mainActivity;
-    private List<ContentBean.Content> data;
+    private List<Content> mList;
 
     public MainAdapter(Context context) {
         this.mContext = context;
@@ -54,14 +54,14 @@ public class MainAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         final MyViewHolder viewHolder = (MyViewHolder) holder;
-        final ContentBean.Content bean = data.get(position);
+        final Content bean = mList.get(position);
 
-        viewHolder.holderNameTv.setText(bean.name);
-        viewHolder.holderIntroTv.setText(bean.intro);
+        viewHolder.holderNameTv.setText(bean.getName());
+        viewHolder.holderIntroTv.setText(bean.getIntro());
 
         Glide
                 .with(mContext)
-                .load(ServerAPI.BASE_URL + bean.pic)
+                .load(ServerAPI.BASE_URL + bean.getPic())
                 .override(480, 270)
                 .crossFade()
                 .into(viewHolder.holderPicIv);
@@ -76,9 +76,9 @@ public class MainAdapter extends RecyclerView.Adapter {
     }
 
     @SuppressWarnings("unchecked")
-    private void onItemClick(ContentBean.Content bean, MyViewHolder holder) {
+    private void onItemClick(Content content, MyViewHolder holder) {
         Intent intent = new Intent(mContext, DetailActivity.class);
-        intent.putExtra("content", bean);
+        intent.putExtra("content", content);
 
         Pair[] pairs = new Pair[]{
                 new Pair(holder.holderPicIv, "tran_01")
@@ -92,7 +92,7 @@ public class MainAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return data == null ? 0 : data.size();
+        return mList == null ? 0 : mList.size();
     }
 
     private class MyViewHolder extends RecyclerView.ViewHolder {
@@ -106,8 +106,8 @@ public class MainAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public void setData(List<ContentBean.Content> data) {
-        this.data = data;
+    public void setData(List<Content> list) {
+        this.mList = list;
         notifyDataSetChanged();
     }
 }

@@ -10,7 +10,7 @@ import android.support.v7.widget.Toolbar;
 import com.southernbox.inf.R;
 import com.southernbox.inf.activity.MainActivity;
 import com.southernbox.inf.adapter.MyFragmentPagerAdapter;
-import com.southernbox.inf.bean.OptionBean;
+import com.southernbox.inf.entity.Option;
 import com.southernbox.inf.fragment.ItemFragment;
 
 import java.util.ArrayList;
@@ -26,10 +26,10 @@ public class ItemViewPager {
     private ViewPager mViewPager;
     private ArrayList<Fragment> fragments;
     private String[] titles;
-    private OptionBean.Option option;
+    private Option option;
     private MainActivity mainActivity;
 
-    public ItemViewPager(Context mContext, OptionBean.Option option) {
+    public ItemViewPager(Context mContext, Option option) {
         this.option = option;
         mainActivity = (MainActivity) mContext;
         initView();
@@ -44,21 +44,21 @@ public class ItemViewPager {
 
     private void initFragment() {
         fragments = new ArrayList<>();
-        int size = option.secondOptionList.size();
+        int size = option.getSecondOptionList().size();
         titles = new String[size];
         for (int i = 0; i < size; i++) {
-            titles[i] = option.secondOptionList.get(i).title;
+            titles[i] = option.getSecondOptionList().get(i).getTitle();
             ItemFragment fragment = new ItemFragment();
             // 传递参数到Fragment中
             Bundle bundle = new Bundle();
-            bundle.putString("json_url", option.secondOptionList.get(i).jsonUrl);
+            bundle.putString("json_url", option.getSecondOptionList().get(i).getJsonUrl());
             fragment.setArguments(bundle);
             fragments.add(fragment);
         }
     }
 
     public void initData() {
-        mToolbar.setTitle(option.title);
+        mToolbar.setTitle(option.getTitle());
 
         mViewPager.setAdapter(new MyFragmentPagerAdapter(mainActivity.getSupportFragmentManager(), fragments, titles));
         mTabLayout.setupWithViewPager(mViewPager);

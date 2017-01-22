@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.webkit.JavascriptInterface;
 
 import com.southernbox.inf.activity.DetailActivity;
-import com.southernbox.inf.bean.ContentBean;
+import com.southernbox.inf.entity.Content;
 import com.southernbox.inf.fragment.ItemFragment;
 import com.southernbox.inf.pager.ItemViewPager;
 
@@ -16,7 +16,7 @@ import com.southernbox.inf.pager.ItemViewPager;
 
 public class Js2Java {
     Context mContext;
-    ContentBean.Content bean;
+    Content content;
     ItemViewPager viewPager;
     ItemFragment fragment;
 
@@ -26,13 +26,13 @@ public class Js2Java {
 
     @JavascriptInterface
     public void goDetail(String name, String pic, String htmlUrl) {
-        bean = new ContentBean().new Content();
-        bean.name = name;
-        bean.pic = pic;
-        bean.htmlUrl = htmlUrl;
+        content = new Content();
+        content.setName(name);
+        content.setPic(pic);
+        content.setHtmlUrl(htmlUrl);
 
         Intent intent = new Intent(mContext, DetailActivity.class);
-        intent.putExtra("content", bean);
+        intent.putExtra("content", content);
         mContext.startActivity(intent);
     }
 }
