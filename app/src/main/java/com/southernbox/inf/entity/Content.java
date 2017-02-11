@@ -2,7 +2,12 @@ package com.southernbox.inf.entity;
 
 import java.io.Serializable;
 
-public class Content implements Serializable {
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
+public class Content extends RealmObject implements Serializable {
+
+    @PrimaryKey
     private String id;
     private int type;
     private String pic;

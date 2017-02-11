@@ -1,74 +1,61 @@
 package com.southernbox.inf.entity;
 
-import java.util.List;
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
-public class Option {
-	private int id;
-	private int type;
-	private String icon;
-	private String title;
-	private List<SecondOption> secondOptionList;
+public class Option extends RealmObject {
 
-	public Option(int id, int type, String icon, String title,
-			List<SecondOption> secondOptionList) {
-		super();
-		this.id = id;
-		this.type = type;
-		this.icon = icon;
-		this.title = title;
-		this.secondOptionList = secondOptionList;
-	}
+    @PrimaryKey
+    private int id;
+    private int type;
+    private String icon;
+    private String title;
 
-	public Option(int id, int type, String icon, String title) {
-		super();
-		this.id = id;
-		this.type = type;
-		this.icon = icon;
-		this.title = title;
-	}
+    private RealmList<SecondOption> secondOptionList;
 
-	public Option() {
-		super();
-	}
+    public Option() {
+        super();
+    }
 
-	public int getId() {
-		return id;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	public int getType() {
-		return type;
-	}
+    public int getType() {
+        return type;
+    }
 
-	public void setType(int type) {
-		this.type = type;
-	}
+    public void setType(int type) {
+        this.type = type;
+    }
 
-	public String getIcon() {
-		return icon;
-	}
+    public String getIcon() {
+        return icon;
+    }
 
-	public void setIcon(String icon) {
-		this.icon = icon;
-	}
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
 
-	public String getTitle() {
-		return title;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-	public List<SecondOption> getSecondOptionList() {
-		return secondOptionList;
-	}
+    public RealmList<SecondOption> getSecondOptionList() {
+        return secondOptionList;
+    }
 
-	public void setSecondOptionList(List<SecondOption> secondOptionList) {
-		this.secondOptionList = secondOptionList;
-	}
+    public void setSecondOptionList(RealmList<SecondOption> secondOptionList) {
+        this.secondOptionList = secondOptionList;
+    }
 
 }

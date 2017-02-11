@@ -10,7 +10,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 
@@ -19,7 +18,6 @@ import com.google.gson.reflect.TypeToken;
 import com.southernbox.inf.R;
 import com.southernbox.inf.entity.Option;
 import com.southernbox.inf.pager.ItemViewPager;
-import com.southernbox.inf.util.CacheUtils;
 import com.southernbox.inf.util.RequestServes;
 import com.southernbox.inf.util.ServerAPI;
 import com.southernbox.inf.util.ToastUtil;
@@ -27,6 +25,8 @@ import com.southernbox.inf.util.ToastUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Retrofit;
@@ -55,12 +55,20 @@ public class MainActivity extends AppCompatActivity
 
         mContext = this;
 
+        Realm.init(this);
+        RealmConfiguration realmConfig = new RealmConfiguration.Builder().build();
+        final Realm mRealm = Realm.getInstance(realmConfig);
+
         // 优先加载本地缓存数据
-        String cacheData = CacheUtils.getString(mContext, ServerAPI.OPTION_URL,
-                null);
-        if (!TextUtils.isEmpty(cacheData)) {
-            processData(cacheData);
+        optionList = mRealm.where(Option.class).findAll();
+        if (optionList != null) {
+            initViewPager();
         }
+
+//        String cacheData = CacheUtils.getString(mContext, ServerAPI.OPTION_URL, null);
+//        if (!TextUtils.isEmpty(cacheData)) {
+//            processData(cacheData);
+//        }
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(ServerAPI.BASE_URL + "/")
@@ -79,8 +87,17 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onResponse(Call<String> call, retrofit2.Response<String> response) {
                 String responseString = response.body();
-                CacheUtils.putString(mContext, ServerAPI.OPTION_URL, responseString);
-                processData(responseString);
+                Gson gson = new Gson();
+                optionList = gson.fromJson(responseString, new TypeToken<List<Option>>() {
+                }.getType());
+                mRealm.beginTransaction();
+                mRealm.copyToRealmOrUpdate(optionList);
+                mRealm.commitTransaction();
+                if (optionList != null) {
+                    initViewPager();
+                }
+//                CacheUtils.putString(mContext, ServerAPI.OPTION_URL, responseString);
+//                processData(responseString);
             }
 
             @Override
@@ -128,14 +145,14 @@ public class MainActivity extends AppCompatActivity
 //        return true;
 //    }
 
-    private void processData(String json) {
-        Gson gson = new Gson();
-        optionList = gson.fromJson(json, new TypeToken<List<Option>>() {
-        }.getType());
-        if (optionList != null) {
-            initViewPager();
-        }
-    }
+//    private void processData(String json) {
+//        Gson gson = new Gson();
+//        optionList = gson.fromJson(json, new TypeToken<List<Option>>() {
+//        }.getType());
+//        if (optionList != null) {
+//            initViewPager();
+//        }
+//    }
 
     private void initViewPager() {
         viewPagers = new ArrayList<>();
@@ -143,7 +160,9 @@ public class MainActivity extends AppCompatActivity
         for (int i = 0; i < size; i++) {
             viewPagers.add(new ItemViewPager(mContext, optionList.get(i)));
         }
-        viewPagers.get(0).initData();
+        if (optionList.size() > 0) {
+            viewPagers.get(0).initData();
+        }
     }
 
     @Override

@@ -18,7 +18,6 @@ import com.google.gson.reflect.TypeToken;
 import com.southernbox.inf.R;
 import com.southernbox.inf.adapter.MainAdapter;
 import com.southernbox.inf.entity.Content;
-import com.southernbox.inf.util.CacheUtils;
 import com.southernbox.inf.util.Dp2PxUtil;
 import com.southernbox.inf.util.RequestServes;
 import com.southernbox.inf.util.ServerAPI;
@@ -26,6 +25,8 @@ import com.southernbox.inf.util.ToastUtil;
 
 import java.util.List;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Retrofit;
@@ -43,6 +44,7 @@ public class ItemFragment extends Fragment {
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private MainAdapter adapter;
     public List<Content> contentList;
+    private Realm mRealm;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,6 +54,9 @@ public class ItemFragment extends Fragment {
         if (!TextUtils.isEmpty(jsonUrl) && jsonUrl.length() > 0) {
             jsonUrl = jsonUrl.substring(1, jsonUrl.length());
         }
+        Realm.init(getContext());
+        RealmConfiguration realmConfig = new RealmConfiguration.Builder().build();
+        mRealm = Realm.getInstance(realmConfig);
     }
 
     @Nullable
@@ -91,11 +96,16 @@ public class ItemFragment extends Fragment {
             return;
         }
         // 优先加载本地缓存数据
-        String cacheData = CacheUtils.getString(mContext, jsonUrl,
-                null);
-        if (!TextUtils.isEmpty(cacheData)) {
-            processData(cacheData);
+        contentList = mRealm.where(Content.class).findAll();
+        if (contentList != null) {
+            adapter.setData(contentList);
         }
+
+//        String cacheData = CacheUtils.getString(mContext, jsonUrl,
+//                null);
+//        if (!TextUtils.isEmpty(cacheData)) {
+//            processData(cacheData);
+//        }
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(ServerAPI.BASE_URL + "/")
@@ -114,33 +124,53 @@ public class ItemFragment extends Fragment {
             @Override
             public void onResponse(Call<String> call, retrofit2.Response<String> response) {
                 String responseString = response.body();
-                CacheUtils.putString(mContext, jsonUrl, responseString);
-                if (!TextUtils.isEmpty(responseString)) {
-                    processData(responseString);
+
+                Gson gson = new Gson();
+                contentList = gson.fromJson(responseString, new TypeToken<List<Content>>() {
+                }.getType());
+
+                mRealm.beginTransaction();
+                mRealm.copyToRealmOrUpdate(contentList);
+                mRealm.commitTransaction();
+
+                if (contentList != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter.setData(contentList);
+                            mSwipeRefreshLayout.setRefreshing(false);
+                        }
+                    });
                 }
+
+//                CacheUtils.putString(mContext, jsonUrl, responseString);
+//                if (!TextUtils.isEmpty(responseString)) {
+//                    processData(responseString);
+//                }
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
+                mSwipeRefreshLayout.setRefreshing(false);
                 ToastUtil.toastShow(mContext, "网络连接失败");
             }
         });
     }
 
-    private void processData(String json) {
-        Gson gson = new Gson();
-        contentList = gson.fromJson(json, new TypeToken<List<Content>>() {
-        }.getType());
-        if (contentList != null) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    adapter.setData(contentList);
-                    mSwipeRefreshLayout.setRefreshing(false);
-                }
-            });
-        }
-    }
+//    private void processData(String json) {
+//        Gson gson = new Gson();
+//        contentList = gson.fromJson(json, new TypeToken<List<Content>>() {
+//        }.getType());
+//        if (contentList != null) {
+//            getActivity().runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    adapter.setData(contentList);
+//                    mSwipeRefreshLayout.setRefreshing(false);
+//                }
+//            });
+//        }
+//    }
 
     private void initRecyclerView() {
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.home_content_rv);
