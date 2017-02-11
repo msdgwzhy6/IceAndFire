@@ -33,8 +33,9 @@ public class MainAdapter extends RecyclerView.Adapter {
     private MainActivity mainActivity;
     private List<Content> mList;
 
-    public MainAdapter(Context context) {
+    public MainAdapter(Context context, List<Content> list) {
         this.mContext = context;
+        this.mList = list;
         mainActivity = (MainActivity) mContext;
     }
 
@@ -104,10 +105,5 @@ public class MainAdapter extends RecyclerView.Adapter {
         MyViewHolder(View itemView) {
             super(itemView);
         }
-    }
-
-    public void setData(List<Content> list) {
-        this.mList = list;
-        notifyDataSetChanged();
     }
 }

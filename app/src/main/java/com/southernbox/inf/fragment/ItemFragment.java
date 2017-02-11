@@ -23,6 +23,7 @@ import com.southernbox.inf.util.RequestServes;
 import com.southernbox.inf.util.ServerAPI;
 import com.southernbox.inf.util.ToastUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
@@ -43,7 +44,7 @@ public class ItemFragment extends Fragment {
     private View rootView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private MainAdapter adapter;
-    public List<Content> contentList;
+    public List<Content> contentList = new ArrayList<>();
     private Realm mRealm;
 
     @Override
@@ -61,12 +62,14 @@ public class ItemFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         if (rootView == null) {
-            rootView = LayoutInflater.from(mContext).inflate(R.layout.fragment_home, container, false);
-
-            initSwipeRefreshLayout();
+            rootView = LayoutInflater.from(mContext)
+                    .inflate(R.layout.fragment_home, container, false);
             initRecyclerView();
+            initSwipeRefreshLayout();
         } else {
             ViewGroup parent = (ViewGroup) rootView.getParent();
             if (parent != null) {
@@ -76,36 +79,42 @@ public class ItemFragment extends Fragment {
         return rootView;
     }
 
+    private void initRecyclerView() {
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.home_content_rv);
+        recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+        adapter = new MainAdapter(getActivity(), contentList);
+        recyclerView.setAdapter(adapter);
+    }
+
     private void initSwipeRefreshLayout() {
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.home_refresh_srl);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimaryDark);
-        mSwipeRefreshLayout.setProgressViewOffset(false, Dp2PxUtil.getPx(mContext, -50), Dp2PxUtil.getPx(mContext, 20));
+        mSwipeRefreshLayout.setProgressViewOffset(false,
+                Dp2PxUtil.getPx(mContext, -50), Dp2PxUtil.getPx(mContext, 20));
+        SwipeRefreshLayout.OnRefreshListener refreshListener =
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        loadData();
+                    }
+                };
+        mSwipeRefreshLayout.setOnRefreshListener(refreshListener);
         mSwipeRefreshLayout.setRefreshing(true);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                                                     @Override
-                                                     public void onRefresh() {
-                                                         loadDatas();
-                                                     }
-                                                 }
-        );
+        refreshListener.onRefresh();
+
+        //加载本地缓存数据
+//        if (!TextUtils.isEmpty(jsonUrl)) {
+//            contentList.clear();
+//            contentList.addAll(mRealm.where(Content.class).findAll());
+//            adapter.notifyDataSetChanged();
+//        }
     }
 
-    private void loadDatas() {
+    private void loadData() {
         if (TextUtils.isEmpty(jsonUrl)) {
             mSwipeRefreshLayout.setRefreshing(false);
             return;
         }
-        // 优先加载本地缓存数据
-        contentList = mRealm.where(Content.class).findAll();
-        if (contentList != null) {
-            adapter.setData(contentList);
-        }
-
-//        String cacheData = CacheUtils.getString(mContext, jsonUrl,
-//                null);
-//        if (!TextUtils.isEmpty(cacheData)) {
-//            processData(cacheData);
-//        }
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(ServerAPI.BASE_URL + "/")
@@ -117,36 +126,29 @@ public class ItemFragment extends Fragment {
 //                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build();
 
-        RequestServes requestServes = retrofit.create(RequestServes.class);//这里采用的是Java的动态代理模式
+        RequestServes requestServes = retrofit.create(RequestServes.class);
         Call<String> call = requestServes.getPerson(jsonUrl);
 
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, retrofit2.Response<String> response) {
+                mSwipeRefreshLayout.setRefreshing(false);
                 String responseString = response.body();
 
                 Gson gson = new Gson();
-                contentList = gson.fromJson(responseString, new TypeToken<List<Content>>() {
-                }.getType());
+                List<Content> list = gson.fromJson(responseString,
+                        new TypeToken<List<Content>>() {
+                        }.getType());
+                if (list != null) {
+                    contentList.clear();
+                    contentList.addAll(list);
+                }
 
                 mRealm.beginTransaction();
                 mRealm.copyToRealmOrUpdate(contentList);
                 mRealm.commitTransaction();
 
-                if (contentList != null) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            adapter.setData(contentList);
-                            mSwipeRefreshLayout.setRefreshing(false);
-                        }
-                    });
-                }
-
-//                CacheUtils.putString(mContext, jsonUrl, responseString);
-//                if (!TextUtils.isEmpty(responseString)) {
-//                    processData(responseString);
-//                }
+                adapter.notifyDataSetChanged();
             }
 
             @Override
@@ -155,34 +157,6 @@ public class ItemFragment extends Fragment {
                 ToastUtil.toastShow(mContext, "网络连接失败");
             }
         });
-    }
-
-//    private void processData(String json) {
-//        Gson gson = new Gson();
-//        contentList = gson.fromJson(json, new TypeToken<List<Content>>() {
-//        }.getType());
-//        if (contentList != null) {
-//            getActivity().runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    adapter.setData(contentList);
-//                    mSwipeRefreshLayout.setRefreshing(false);
-//                }
-//            });
-//        }
-//    }
-
-    private void initRecyclerView() {
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.home_content_rv);
-
-        // 设置布局管理器，否则会报错
-        recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-
-        adapter = new MainAdapter(getActivity());
-        recyclerView.setAdapter(adapter);
-
-        // 加载数据
-        loadDatas();
     }
 
     @Override

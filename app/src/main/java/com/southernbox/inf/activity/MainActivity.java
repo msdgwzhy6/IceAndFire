@@ -65,11 +65,6 @@ public class MainActivity extends AppCompatActivity
             initViewPager();
         }
 
-//        String cacheData = CacheUtils.getString(mContext, ServerAPI.OPTION_URL, null);
-//        if (!TextUtils.isEmpty(cacheData)) {
-//            processData(cacheData);
-//        }
-
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(ServerAPI.BASE_URL + "/")
                 //增加返回值为String的支持
@@ -96,8 +91,6 @@ public class MainActivity extends AppCompatActivity
                 if (optionList != null) {
                     initViewPager();
                 }
-//                CacheUtils.putString(mContext, ServerAPI.OPTION_URL, responseString);
-//                processData(responseString);
             }
 
             @Override
@@ -138,21 +131,6 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.main, menu);
-//        return true;
-//    }
-
-//    private void processData(String json) {
-//        Gson gson = new Gson();
-//        optionList = gson.fromJson(json, new TypeToken<List<Option>>() {
-//        }.getType());
-//        if (optionList != null) {
-//            initViewPager();
-//        }
-//    }
 
     private void initViewPager() {
         viewPagers = new ArrayList<>();
