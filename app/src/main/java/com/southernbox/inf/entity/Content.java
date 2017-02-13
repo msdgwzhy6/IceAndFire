@@ -15,19 +15,6 @@ public class Content extends RealmObject implements Serializable {
     private String intro;
     private String htmlUrl;
 
-    public Content(String id, int type, String pic, String name, String intro,
-                   String htmlUrl) {
-        this.id = id;
-        this.type = type;
-        this.pic = pic;
-        this.name = name;
-        this.intro = intro;
-        this.htmlUrl = htmlUrl;
-    }
-
-    public Content() {
-    }
-
     public String getId() {
         return id;
     }

@@ -1,8 +1,6 @@
 package com.southernbox.inf.adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
@@ -78,17 +76,17 @@ public class MainAdapter extends RecyclerView.Adapter {
 
     @SuppressWarnings("unchecked")
     private void onItemClick(Content content, MyViewHolder holder) {
-        Intent intent = new Intent(mContext, DetailActivity.class);
-        intent.putExtra("content", content);
+        Pair[] pairs = new Pair[]{new Pair(holder.holderPicIv, "tran_01")};
+        ActivityOptionsCompat options = ActivityOptionsCompat
+                .makeSceneTransitionAnimation(mainActivity, pairs);
 
-        Pair[] pairs = new Pair[]{
-                new Pair(holder.holderPicIv, "tran_01")
-        };
-        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                mainActivity, pairs
+        DetailActivity.show(
+                mContext,
+                options,
+                content.getName(),
+                content.getPic(),
+                content.getHtmlUrl()
         );
-
-        ActivityCompat.startActivity(mContext, intent, options.toBundle());
     }
 
     @Override

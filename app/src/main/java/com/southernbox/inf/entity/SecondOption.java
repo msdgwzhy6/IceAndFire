@@ -11,16 +11,6 @@ public class SecondOption extends RealmObject {
     private String title;
     private String jsonUrl;
 
-    public SecondOption(int id, int type, String title, String jsonUrl) {
-        this.id = id;
-        this.type = type;
-        this.title = title;
-        this.jsonUrl = jsonUrl;
-    }
-
-    public SecondOption() {
-    }
-
     public int getId() {
         return id;
     }
