@@ -103,11 +103,11 @@ public class ItemFragment extends Fragment {
         refreshListener.onRefresh();
 
         //加载本地缓存数据
-//        if (!TextUtils.isEmpty(jsonUrl)) {
-//            contentList.clear();
-//            contentList.addAll(mRealm.where(Content.class).findAll());
-//            adapter.notifyDataSetChanged();
-//        }
+        if (!TextUtils.isEmpty(jsonUrl)) {
+            contentList.clear();
+            contentList.addAll(mRealm.where(Content.class).findAll());
+            adapter.notifyDataSetChanged();
+        }
     }
 
     private void loadData() {

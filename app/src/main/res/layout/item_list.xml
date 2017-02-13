@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center"
     android:layout_margin="10dp"
+    android:gravity="center"
     app:cardElevation="8dp">
 
     <LinearLayout
@@ -25,8 +24,7 @@
             android:id="@+id/personItem_text_ll"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            >
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/personItem_name_tv"
@@ -35,7 +33,6 @@
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="6dp"
                 android:maxLines="1"
-                android:text="艾德史塔克"
                 android:textColor="@color/dark"
                 android:textSize="20sp" />
 
@@ -47,7 +44,6 @@
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="4dp"
                 android:maxLines="1"
-                android:text="临冬城城主"
                 android:textColor="@color/dark"
                 android:textSize="12sp" />
 
