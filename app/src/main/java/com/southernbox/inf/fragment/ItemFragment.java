@@ -105,7 +105,10 @@ public class ItemFragment extends Fragment {
         //加载本地缓存数据
         if (!TextUtils.isEmpty(jsonUrl)) {
             contentList.clear();
-            contentList.addAll(mRealm.where(Content.class).findAll());
+            List<Content> cacheList = mRealm
+                    .where(Content.class)
+                    .findAll();
+            contentList.addAll(cacheList);
             adapter.notifyDataSetChanged();
         }
     }
