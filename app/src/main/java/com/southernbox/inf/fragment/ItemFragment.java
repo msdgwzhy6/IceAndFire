@@ -157,7 +157,7 @@ public class ItemFragment extends Fragment {
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 mSwipeRefreshLayout.setRefreshing(false);
-                ToastUtil.toastShow(mContext, "网络连接失败");
+                ToastUtil.show(mContext, "网络连接失败");
             }
         });
     }

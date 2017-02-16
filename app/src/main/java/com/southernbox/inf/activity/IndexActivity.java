@@ -1,9 +1,9 @@
 package com.southernbox.inf.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.v7.app.AppCompatActivity;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
@@ -16,7 +16,7 @@ import com.southernbox.inf.R;
  * 启动页面
  */
 
-public class IndexActivity extends Activity {
+public class IndexActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

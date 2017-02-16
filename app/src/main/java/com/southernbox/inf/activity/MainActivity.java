@@ -1,17 +1,32 @@
 package com.southernbox.inf.activity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
+import android.util.TypedValue;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CompoundButton;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -44,10 +59,12 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout drawer;
     private List<Option> optionList;
     public static ArrayList<ItemViewPager> viewPagers;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(R.style.NightTheme);
         setContentView(R.layout.activity_main);
         initToolBar();
         initDrawerLayout();
@@ -95,7 +112,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-                ToastUtil.toastShow(mContext, "网络连接失败");
+                ToastUtil.show(mContext, "网络连接失败");
             }
         });
     }
@@ -118,8 +135,167 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initNavigationView() {
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        Menu menu = navigationView.getMenu();
+        MenuItem nightItem = menu.findItem(R.id.nav_night);
+        View nightView = MenuItemCompat.getActionView(nightItem);
+        SwitchCompat switchCompat = (SwitchCompat) nightView.findViewById(R.id.switch_compat);
+        switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    setTheme(R.style.NightTheme);
+                    refreshUI(false);
+                } else {
+                    setTheme(R.style.DayTheme);
+                    refreshUI(true);
+                }
+                showAnimation();
+            }
+        });
+    }
+
+    /**
+     * 展示一个切换动画
+     */
+    private void showAnimation() {
+        final View decorView = getWindow().getDecorView();
+        Bitmap cacheBitmap = getCacheBitmapFromView(decorView);
+        if (decorView instanceof ViewGroup && cacheBitmap != null) {
+            final View view = new View(this);
+            view.setBackgroundDrawable(new BitmapDrawable(getResources(), cacheBitmap));
+            ViewGroup.LayoutParams layoutParam = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT);
+            ((ViewGroup) decorView).addView(view, layoutParam);
+            ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(view, "alpha", 1f, 0f);
+            objectAnimator.setDuration(300);
+            objectAnimator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    ((ViewGroup) decorView).removeView(view);
+                }
+            });
+            objectAnimator.start();
+        }
+    }
+
+    /**
+     * 获取一个 View 的缓存视图
+     *
+     * @param view
+     * @return
+     */
+    private Bitmap getCacheBitmapFromView(View view) {
+        final boolean drawingCacheEnabled = true;
+        view.setDrawingCacheEnabled(drawingCacheEnabled);
+        view.buildDrawingCache(drawingCacheEnabled);
+        final Bitmap drawingCache = view.getDrawingCache();
+        Bitmap bitmap;
+        if (drawingCache != null) {
+            bitmap = Bitmap.createBitmap(drawingCache);
+            view.setDrawingCacheEnabled(false);
+        } else {
+            bitmap = null;
+        }
+        return bitmap;
+    }
+
+    /**
+     * 刷新UI界面
+     */
+    private void refreshUI(boolean isDay) {
+//        TypedValue background = new TypedValue();//背景色
+//        TypedValue textColor = new TypedValue();//字体颜色
+//        Resources.Theme theme = getTheme();
+//        theme.resolveAttribute(R.attr.clockBackground, background, true);
+//        theme.resolveAttribute(R.attr.clockTextColor, textColor, true);
+
+//        mHeaderLayout.setBackgroundResource(background.resourceId);
+//        for (RelativeLayout layout : mLayoutList) {
+//            layout.setBackgroundResource(background.resourceId);
+//        }
+//        for (CheckBox checkBox : mCheckBoxList) {
+//            checkBox.setBackgroundResource(background.resourceId);
+//        }
+//        for (TextView textView : mTextViewList) {
+//            textView.setBackgroundResource(background.resourceId);
+//        }
+
+//        Resources resources = getResources();
+//        for (TextView textView : mTextViewList) {
+//            textView.setTextColor(resources.getColor(textColor.resourceId));
+//        }
+
+//        int childCount = mRecyclerView.getChildCount();
+//        for (int childIndex = 0; childIndex < childCount; childIndex++) {
+//            ViewGroup childView = (ViewGroup) mRecyclerView.getChildAt(childIndex);
+//            childView.setBackgroundResource(background.resourceId);
+//            View infoLayout = childView.findViewById(R.id.info_layout);
+//            infoLayout.setBackgroundResource(background.resourceId);
+//            TextView nickName = (TextView) childView.findViewById(R.id.tv_nickname);
+//            nickName.setBackgroundResource(background.resourceId);
+//            nickName.setTextColor(resources.getColor(textColor.resourceId));
+//            TextView motto = (TextView) childView.findViewById(R.id.tv_motto);
+//            motto.setBackgroundResource(background.resourceId);
+//            motto.setTextColor(resources.getColor(textColor.resourceId));
+//        }
+
+        //让 RecyclerView 缓存在 Pool 中的 Item 失效
+        //那么，如果是ListView，要怎么做呢？这里的思路是通过反射拿到 AbsListView 类中的 RecycleBin 对象，然后同样再用反射去调用 clear 方法
+//        Class<RecyclerView> recyclerViewClass = RecyclerView.class;
+//        try {
+//            Field declaredField = recyclerViewClass.getDeclaredField("mRecycler");
+//            declaredField.setAccessible(true);
+//            Method declaredMethod = Class.forName(RecyclerView.Recycler.class.getName()).getDeclaredMethod("clear", (Class<?>[]) new Class[0]);
+//            declaredMethod.setAccessible(true);
+//            declaredMethod.invoke(declaredField.get(mRecyclerView), new Object[0]);
+//            RecyclerView.RecycledViewPool recycledViewPool = mRecyclerView.getRecycledViewPool();
+//            recycledViewPool.clear();
+//
+//        } catch (NoSuchFieldException e) {
+//            e.printStackTrace();
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (NoSuchMethodException e) {
+//            e.printStackTrace();
+//        } catch (InvocationTargetException e) {
+//            e.printStackTrace();
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();
+//        }
+
+        TypedValue colorPrimary = new TypedValue();
+        Resources.Theme theme = getTheme();
+        theme.resolveAttribute(R.attr.colorPrimary, colorPrimary, true);
+        //更新Toolbar的UI
+        mToolbar.setBackgroundResource(colorPrimary.resourceId);
+        //更新TabLayout的UI
+        TabLayout mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        mTabLayout.setBackgroundResource(colorPrimary.resourceId);
+
+        View navigationHeader = navigationView.getHeaderView(0);
+        if (isDay) {
+            navigationHeader.setBackgroundResource(R.drawable.side_nav_bar_day);
+        } else {
+            navigationHeader.setBackgroundResource(R.drawable.side_nav_bar_night);
+        }
+
+        refreshStatusBar();
+    }
+
+    /**
+     * 刷新 StatusBar
+     */
+    private void refreshStatusBar() {
+        if (Build.VERSION.SDK_INT >= 21) {
+            TypedValue typedValue = new TypedValue();
+            Resources.Theme theme = getTheme();
+            theme.resolveAttribute(R.attr.colorPrimaryDark, typedValue, true);
+            getWindow().setStatusBarColor(getResources().getColor(typedValue.resourceId));
+        }
     }
 
     @Override
@@ -161,7 +337,7 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int position = 0;
+        int position;
 
         // Handle navigation view item clicks here.
         int id = item.getItemId();
@@ -174,6 +350,8 @@ public class MainActivity extends AppCompatActivity
             position = 2;
         } else if (id == R.id.nav_castles) {
             position = 3;
+        } else {
+            return true;
         }
 
         viewPagers.get(position).initData();
@@ -187,10 +365,10 @@ public class MainActivity extends AppCompatActivity
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (System.currentTimeMillis() - mExitTime > 2000) {
-                ToastUtil.toastShow(this, "再按一次退出");
+                ToastUtil.show(this, "再按一次退出");
                 mExitTime = System.currentTimeMillis();
             } else {
-                ToastUtil.toastCancel();
+                ToastUtil.cancel();
                 finish();
             }
         }
