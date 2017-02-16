@@ -39,7 +39,6 @@ public class ItemViewPager {
         mToolbar = (Toolbar) mainActivity.findViewById(R.id.main_toolbar);
         mTabLayout = (TabLayout) mainActivity.findViewById(R.id.tab_layout);
         mViewPager = (ViewPager) mainActivity.findViewById(R.id.view_pager);
-        initFragment();
     }
 
     private void initFragment() {
@@ -58,6 +57,8 @@ public class ItemViewPager {
     }
 
     public void initData() {
+        initFragment();
+
         mToolbar.setTitle(option.getTitle());
 
         mViewPager.setAdapter(new MyFragmentPagerAdapter(mainActivity.getSupportFragmentManager(), fragments, titles));
