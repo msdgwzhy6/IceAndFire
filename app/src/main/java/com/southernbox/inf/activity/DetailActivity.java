@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.southernbox.inf.R;
 import com.southernbox.inf.js.Js2Java;
+import com.southernbox.inf.util.DayNightHelper;
 import com.southernbox.inf.util.ServerAPI;
 
 /**
@@ -47,6 +48,14 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        DayNightHelper mDayNightHelper = new DayNightHelper(this);
+        if (mDayNightHelper.isDay()) {
+            setTheme(R.style.DayTheme);
+        } else {
+            setTheme(R.style.NightTheme);
+        }
+
         setContentView(R.layout.activity_detail);
         Bundle bundle = getIntent().getExtras();
         title = bundle.getString("title");

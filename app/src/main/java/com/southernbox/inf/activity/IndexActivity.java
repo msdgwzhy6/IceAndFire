@@ -10,6 +10,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import com.southernbox.inf.R;
+import com.southernbox.inf.util.DayNightHelper;
 
 /**
  * Created SouthernBox on 2016/3/27.
@@ -21,6 +22,12 @@ public class IndexActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        DayNightHelper mDayNightHelper = new DayNightHelper(this);
+        if (mDayNightHelper.isDay()) {
+            setTheme(R.style.DayTheme);
+        } else {
+            setTheme(R.style.NightTheme);
+        }
         setContentView(R.layout.activity_welcome);
 
         ImageView ivIndex = (ImageView) findViewById(R.id.iv_index);

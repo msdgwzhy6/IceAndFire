@@ -33,6 +33,7 @@ import com.google.gson.reflect.TypeToken;
 import com.southernbox.inf.R;
 import com.southernbox.inf.entity.Option;
 import com.southernbox.inf.pager.ItemViewPager;
+import com.southernbox.inf.util.DayNightHelper;
 import com.southernbox.inf.util.RequestServes;
 import com.southernbox.inf.util.ServerAPI;
 import com.southernbox.inf.util.ToastUtil;
@@ -60,11 +61,17 @@ public class MainActivity extends AppCompatActivity
     private List<Option> optionList;
     public static ArrayList<ItemViewPager> viewPagers;
     private NavigationView navigationView;
+    private DayNightHelper mDayNightHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(R.style.NightTheme);
+        mDayNightHelper = new DayNightHelper(this);
+        if (mDayNightHelper.isDay()) {
+            setTheme(R.style.DayTheme);
+        } else {
+            setTheme(R.style.NightTheme);
+        }
         setContentView(R.layout.activity_main);
         initToolBar();
         initDrawerLayout();
@@ -138,17 +145,33 @@ public class MainActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        View navigationHeader = navigationView.getHeaderView(0);
+        if (mDayNightHelper.isDay()) {
+            navigationHeader.setBackgroundResource(R.drawable.side_nav_bar_day);
+        } else {
+            navigationHeader.setBackgroundResource(R.drawable.side_nav_bar_night);
+        }
+
         Menu menu = navigationView.getMenu();
         MenuItem nightItem = menu.findItem(R.id.nav_night);
         View nightView = MenuItemCompat.getActionView(nightItem);
         SwitchCompat switchCompat = (SwitchCompat) nightView.findViewById(R.id.switch_compat);
+
+        if (mDayNightHelper.isDay()) {
+            switchCompat.setChecked(false);
+        } else {
+            switchCompat.setChecked(true);
+        }
+
         switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b) {
+                    mDayNightHelper.setMode(DayNightHelper.DayNight.NIGHT);
                     setTheme(R.style.NightTheme);
                     refreshUI(false);
                 } else {
+                    mDayNightHelper.setMode(DayNightHelper.DayNight.DAY);
                     setTheme(R.style.DayTheme);
                     refreshUI(true);
                 }
