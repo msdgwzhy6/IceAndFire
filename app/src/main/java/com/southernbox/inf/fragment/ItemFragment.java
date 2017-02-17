@@ -101,16 +101,6 @@ public class ItemFragment extends Fragment {
         mSwipeRefreshLayout.setOnRefreshListener(refreshListener);
         mSwipeRefreshLayout.setRefreshing(true);
         refreshListener.onRefresh();
-
-        //加载本地缓存数据
-        if (!TextUtils.isEmpty(jsonUrl)) {
-            contentList.clear();
-            List<Content> cacheList = mRealm
-                    .where(Content.class)
-                    .findAll();
-            contentList.addAll(cacheList);
-            adapter.notifyDataSetChanged();
-        }
     }
 
     private void loadData() {
@@ -118,6 +108,14 @@ public class ItemFragment extends Fragment {
             mSwipeRefreshLayout.setRefreshing(false);
             return;
         }
+
+        //加载本地缓存数据
+        contentList.clear();
+        List<Content> cacheList = mRealm
+                .where(Content.class)
+                .findAll();
+        contentList.addAll(cacheList);
+        adapter.notifyDataSetChanged();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(ServerAPI.BASE_URL + "/")
