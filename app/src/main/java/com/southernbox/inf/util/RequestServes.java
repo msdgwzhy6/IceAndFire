@@ -17,4 +17,10 @@ public interface RequestServes {
     @GET("{jsonUrl}")
     Call<String> getPerson(@Path("jsonUrl") String jsonUrl);
 
+    @GET("tab.json")
+    Call<String> getTab();
+
+    @GET("content.json")
+    Call<String> getContent();
+
 }

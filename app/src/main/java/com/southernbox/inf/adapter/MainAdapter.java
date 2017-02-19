@@ -15,7 +15,7 @@ import com.bumptech.glide.Glide;
 import com.southernbox.inf.R;
 import com.southernbox.inf.activity.DetailActivity;
 import com.southernbox.inf.activity.MainActivity;
-import com.southernbox.inf.entity.Content;
+import com.southernbox.inf.entity.ContentDTO;
 import com.southernbox.inf.util.ServerAPI;
 
 import java.util.List;
@@ -29,9 +29,9 @@ public class MainAdapter extends RecyclerView.Adapter {
 
     private Context mContext;
     private MainActivity mainActivity;
-    private List<Content> mList;
+    private List<ContentDTO> mList;
 
-    public MainAdapter(Context context, List<Content> list) {
+    public MainAdapter(Context context, List<ContentDTO> list) {
         this.mContext = context;
         this.mList = list;
         mainActivity = (MainActivity) mContext;
@@ -53,14 +53,14 @@ public class MainAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         final MyViewHolder viewHolder = (MyViewHolder) holder;
-        final Content bean = mList.get(position);
+        final ContentDTO content = mList.get(position);
 
-        viewHolder.holderNameTv.setText(bean.getName());
-        viewHolder.holderIntroTv.setText(bean.getIntro());
+        viewHolder.holderNameTv.setText(content.getName());
+        viewHolder.holderIntroTv.setText(content.getIntro());
 
         Glide
                 .with(mContext)
-                .load(ServerAPI.BASE_URL + bean.getPic())
+                .load(ServerAPI.BASE_URL + content.getImg())
                 .override(480, 270)
                 .crossFade()
                 .into(viewHolder.holderPicIv);
@@ -69,13 +69,13 @@ public class MainAdapter extends RecyclerView.Adapter {
         itemRoot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onItemClick(bean, viewHolder);
+                onItemClick(content, viewHolder);
             }
         });
     }
 
     @SuppressWarnings("unchecked")
-    private void onItemClick(Content content, MyViewHolder holder) {
+    private void onItemClick(ContentDTO content, MyViewHolder holder) {
         Pair[] pairs = new Pair[]{new Pair(holder.holderPicIv, "tran_01")};
         ActivityOptionsCompat options = ActivityOptionsCompat
                 .makeSceneTransitionAnimation(mainActivity, pairs);
@@ -84,8 +84,8 @@ public class MainAdapter extends RecyclerView.Adapter {
                 mContext,
                 options,
                 content.getName(),
-                content.getPic(),
-                content.getHtmlUrl()
+                content.getImg(),
+                content.getHtml()
         );
     }
 

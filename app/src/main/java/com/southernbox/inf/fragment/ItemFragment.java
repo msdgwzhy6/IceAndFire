@@ -18,6 +18,7 @@ import com.google.gson.reflect.TypeToken;
 import com.southernbox.inf.R;
 import com.southernbox.inf.adapter.MainAdapter;
 import com.southernbox.inf.entity.Content;
+import com.southernbox.inf.entity.ContentDTO;
 import com.southernbox.inf.util.Dp2PxUtil;
 import com.southernbox.inf.util.RequestServes;
 import com.southernbox.inf.util.ServerAPI;
@@ -40,21 +41,25 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class ItemFragment extends Fragment {
     private Context mContext;
-    private String jsonUrl;
+//    private String jsonUrl;
+    private String type;
     private View rootView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private MainAdapter adapter;
-    public List<Content> contentList = new ArrayList<>();
+    public List<ContentDTO> contentList = new ArrayList<>();
     private Realm mRealm;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getActivity();
-        jsonUrl = getArguments().getString("json_url");
-        if (!TextUtils.isEmpty(jsonUrl) && jsonUrl.length() > 0) {
-            jsonUrl = jsonUrl.substring(1, jsonUrl.length());
-        }
+
+        type = getArguments().getString("type");
+//        jsonUrl = getArguments().getString("json_url");
+//        if (!TextUtils.isEmpty(jsonUrl) && jsonUrl.length() > 0) {
+//            jsonUrl = jsonUrl.substring(1, jsonUrl.length());
+//        }
+
         Realm.init(getContext());
         RealmConfiguration realmConfig = new RealmConfiguration.Builder().build();
         mRealm = Realm.getInstance(realmConfig);
@@ -104,60 +109,64 @@ public class ItemFragment extends Fragment {
     }
 
     private void loadData() {
-        if (TextUtils.isEmpty(jsonUrl)) {
-            mSwipeRefreshLayout.setRefreshing(false);
-            return;
-        }
+//        if (TextUtils.isEmpty(jsonUrl)) {
+//            mSwipeRefreshLayout.setRefreshing(false);
+//            return;
+//        }
+
+        mSwipeRefreshLayout.setRefreshing(false);
 
         //加载本地缓存数据
         contentList.clear();
-        List<Content> cacheList = mRealm
-                .where(Content.class)
+        List<ContentDTO> cacheList = mRealm
+                .where(ContentDTO.class)
+                .equalTo("secondType",type)
                 .findAll();
+        contentList.clear();
         contentList.addAll(cacheList);
         adapter.notifyDataSetChanged();
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(ServerAPI.BASE_URL + "/")
-                //增加返回值为String的支持
-                .addConverterFactory(ScalarsConverterFactory.create())
-//                //增加返回值为Gson的支持(以实体类返回)
-//                .addConverterFactory(GsonConverterFactory.create())
-//                //增加返回值为Oservable<T>的支持
-//                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .build();
-
-        RequestServes requestServes = retrofit.create(RequestServes.class);
-        Call<String> call = requestServes.getPerson(jsonUrl);
-
-        call.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(Call<String> call, retrofit2.Response<String> response) {
-                mSwipeRefreshLayout.setRefreshing(false);
-                String responseString = response.body();
-
-                Gson gson = new Gson();
-                List<Content> list = gson.fromJson(responseString,
-                        new TypeToken<List<Content>>() {
-                        }.getType());
-                if (list != null) {
-                    contentList.clear();
-                    contentList.addAll(list);
-                }
-
-                mRealm.beginTransaction();
-                mRealm.copyToRealmOrUpdate(contentList);
-                mRealm.commitTransaction();
-
-                adapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onFailure(Call<String> call, Throwable t) {
-                mSwipeRefreshLayout.setRefreshing(false);
-                ToastUtil.show(mContext, "网络连接失败");
-            }
-        });
+//        Retrofit retrofit = new Retrofit.Builder()
+//                .baseUrl(ServerAPI.BASE_URL + "/")
+//                //增加返回值为String的支持
+//                .addConverterFactory(ScalarsConverterFactory.create())
+////                //增加返回值为Gson的支持(以实体类返回)
+////                .addConverterFactory(GsonConverterFactory.create())
+////                //增加返回值为Oservable<T>的支持
+////                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+//                .build();
+//
+//        RequestServes requestServes = retrofit.create(RequestServes.class);
+//        Call<String> call = requestServes.getPerson(jsonUrl);
+//
+//        call.enqueue(new Callback<String>() {
+//            @Override
+//            public void onResponse(Call<String> call, retrofit2.Response<String> response) {
+//                mSwipeRefreshLayout.setRefreshing(false);
+//                String responseString = response.body();
+//
+//                Gson gson = new Gson();
+//                List<Content> list = gson.fromJson(responseString,
+//                        new TypeToken<List<Content>>() {
+//                        }.getType());
+//                if (list != null) {
+//                    contentList.clear();
+//                    contentList.addAll(list);
+//                }
+//
+//                mRealm.beginTransaction();
+//                mRealm.copyToRealmOrUpdate(contentList);
+//                mRealm.commitTransaction();
+//
+//                adapter.notifyDataSetChanged();
+//            }
+//
+//            @Override
+//            public void onFailure(Call<String> call, Throwable t) {
+//                mSwipeRefreshLayout.setRefreshing(false);
+//                ToastUtil.show(mContext, "网络连接失败");
+//            }
+//        });
     }
 
     @Override

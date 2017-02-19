@@ -31,14 +31,14 @@ import android.widget.CompoundButton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.southernbox.inf.R;
-import com.southernbox.inf.entity.Option;
+import com.southernbox.inf.entity.ContentDTO;
+import com.southernbox.inf.entity.TabDTO;
 import com.southernbox.inf.pager.ItemViewPager;
 import com.southernbox.inf.util.DayNightHelper;
 import com.southernbox.inf.util.RequestServes;
 import com.southernbox.inf.util.ServerAPI;
 import com.southernbox.inf.util.ToastUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
@@ -55,13 +55,24 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private final static String TYPE_PERSON = "person";
+    private final static String TYPE_HOUSE = "house";
+    private final static String TYPE_HISTORY = "history";
+    private final static String TYPE_CASTLE = "castle";
+
     private Context mContext;
     private Toolbar mToolbar;
     private DrawerLayout drawer;
-    private List<Option> optionList;
-    public static ArrayList<ItemViewPager> viewPagers;
+    //    private List<Option> optionList;
+    private List<TabDTO> tabList;
+    //    public static ArrayList<ItemViewPager> viewPagers;
+    private List<ContentDTO> contentList;
     private NavigationView navigationView;
     private DayNightHelper mDayNightHelper;
+    private Realm mRealm;
+    private boolean loadTabComplete;
+    private boolean loadContentComplete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,12 +92,12 @@ public class MainActivity extends AppCompatActivity
 
         Realm.init(this);
         RealmConfiguration realmConfig = new RealmConfiguration.Builder().build();
-        final Realm mRealm = Realm.getInstance(realmConfig);
+        mRealm = Realm.getInstance(realmConfig);
 
         // 优先加载本地缓存数据
-        optionList = mRealm.where(Option.class).findAll();
-        if (optionList != null) {
-            initViewPager();
+        tabList = mRealm.where(TabDTO.class).findAll();
+        if (tabList != null) {
+            initViewPager("人物", TYPE_PERSON);
         }
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -100,20 +111,22 @@ public class MainActivity extends AppCompatActivity
                 .build();
 
         RequestServes requestServes = retrofit.create(RequestServes.class);//这里采用的是Java的动态代理模式
-        Call<String> call = requestServes.getOption();
 
-        call.enqueue(new Callback<String>() {
+        //获取标签数据
+        Call<String> tabCall = requestServes.getTab();
+        tabCall.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, retrofit2.Response<String> response) {
                 String responseString = response.body();
                 Gson gson = new Gson();
-                optionList = gson.fromJson(responseString, new TypeToken<List<Option>>() {
+                tabList = gson.fromJson(responseString, new TypeToken<List<TabDTO>>() {
                 }.getType());
                 mRealm.beginTransaction();
-                mRealm.copyToRealmOrUpdate(optionList);
+                mRealm.copyToRealmOrUpdate(tabList);
                 mRealm.commitTransaction();
-                if (optionList != null) {
-                    initViewPager();
+                loadTabComplete = true;
+                if (loadContentComplete && tabList != null) {
+                    initViewPager("人物", TYPE_PERSON);
                 }
             }
 
@@ -122,6 +135,31 @@ public class MainActivity extends AppCompatActivity
                 ToastUtil.show(mContext, "网络连接失败");
             }
         });
+
+        //获取内容数据
+        Call<String> contentCall = requestServes.getContent();
+        contentCall.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, retrofit2.Response<String> response) {
+                String responseString = response.body();
+                Gson gson = new Gson();
+                contentList = gson.fromJson(responseString, new TypeToken<List<ContentDTO>>() {
+                }.getType());
+                mRealm.beginTransaction();
+                mRealm.copyToRealmOrUpdate(contentList);
+                mRealm.commitTransaction();
+                loadContentComplete = true;
+                if (loadTabComplete && tabList != null) {
+                    initViewPager("人物", TYPE_PERSON);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                ToastUtil.show(mContext, "网络连接失败");
+            }
+        });
+
     }
 
     private void initToolBar() {
@@ -331,15 +369,23 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void initViewPager() {
-        viewPagers = new ArrayList<>();
-        int size = optionList.size();
-        for (int i = 0; i < size; i++) {
-            viewPagers.add(new ItemViewPager(mContext, optionList.get(i)));
+    private void initViewPager(String title, String type) {
+
+        tabList = mRealm.where(TabDTO.class)
+                .equalTo("firstType", type)
+                .findAll();
+        if (tabList != null) {
+            new ItemViewPager(mContext, title, tabList).initData();
         }
-        if (optionList.size() > 0) {
-            viewPagers.get(0).initData();
-        }
+
+//        viewPagers = new ArrayList<>();
+//        int size = optionList.size();
+//        for (int i = 0; i < size; i++) {
+//            viewPagers.add(new ItemViewPager(mContext, optionList.get(i)));
+//        }
+//        if (optionList.size() > 0) {
+//            viewPagers.get(0).initData();
+//        }
     }
 
     @Override
@@ -366,18 +412,22 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_person) {
-            position = 0;
+            initViewPager("人物", TYPE_PERSON);
+//            position = 0;
         } else if (id == R.id.nav_house) {
-            position = 1;
+            initViewPager("家族", TYPE_HOUSE);
+//            position = 1;
         } else if (id == R.id.nav_history) {
-            position = 2;
+            initViewPager("历史", TYPE_HISTORY);
+//            position = 2;
         } else if (id == R.id.nav_castles) {
-            position = 3;
+            initViewPager("城堡", TYPE_CASTLE);
+//            position = 3;
         } else {
             return true;
         }
 
-        viewPagers.get(position).initData();
+//        viewPagers.get(position).initData();
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
