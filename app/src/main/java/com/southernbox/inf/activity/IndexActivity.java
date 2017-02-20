@@ -148,6 +148,7 @@ public class IndexActivity extends BaseActivity {
             public void onClick(View view) {
                 loadTabData();
                 loadContentData();
+                ivIndex.setClickable(false);
             }
         });
     }

@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -149,10 +150,10 @@ public class MainActivity extends BaseActivity
     }
 
     /**
-     * 获取一个 View 的缓存视图
+     * 获取 View 的缓存视图
      *
-     * @param view
-     * @return
+     * @param view 对应的View
+     * @return 对应View的缓存视图
      */
     private Bitmap getCacheBitmapFromView(View view) {
         final boolean drawingCacheEnabled = true;
@@ -260,7 +261,7 @@ public class MainActivity extends BaseActivity
             TypedValue typedValue = new TypedValue();
             Resources.Theme theme = getTheme();
             theme.resolveAttribute(R.attr.colorPrimaryDark, typedValue, true);
-            getWindow().setStatusBarColor(getResources().getColor(typedValue.resourceId));
+            getWindow().setStatusBarColor(ContextCompat.getColor(mContext, typedValue.resourceId));
         }
     }
 
