@@ -43,6 +43,16 @@ public class DetailActivity extends BaseActivity {
         ActivityCompat.startActivity(context, intent, options.toBundle());
     }
 
+    public static void show(Context context, String title, String img, String html) {
+        Intent intent = new Intent(context, DetailActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("title", title);
+        bundle.putString("img", img);
+        bundle.putString("html", html);
+        intent.putExtras(bundle);
+        context.startActivity(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -27,7 +27,6 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 
 import com.southernbox.inf.R;
-import com.southernbox.inf.entity.ContentDTO;
 import com.southernbox.inf.entity.TabDTO;
 import com.southernbox.inf.pager.ItemViewPager;
 import com.southernbox.inf.util.DayNightHelper;
@@ -51,7 +50,6 @@ public class MainActivity extends BaseActivity
     private Toolbar mToolbar;
     private DrawerLayout drawer;
     private List<TabDTO> tabList;
-    private List<ContentDTO> contentList;
     private NavigationView navigationView;
 
     @Override
