@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.TextView;
 
 import com.southernbox.inf.R;
 import com.southernbox.inf.entity.TabDTO;
@@ -52,6 +53,7 @@ public class MainActivity extends BaseActivity
     private DrawerLayout drawer;
     private List<TabDTO> tabList;
     private NavigationView navigationView;
+    private SwitchCompat switchCompat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +97,7 @@ public class MainActivity extends BaseActivity
         Menu menu = navigationView.getMenu();
         MenuItem nightItem = menu.findItem(R.id.nav_night);
         View nightView = MenuItemCompat.getActionView(nightItem);
-        SwitchCompat switchCompat = (SwitchCompat) nightView.findViewById(R.id.switch_compat);
+        switchCompat = (SwitchCompat) nightView.findViewById(R.id.switch_compat);
 
         if (mDayNightHelper.isDay()) {
             switchCompat.setChecked(false);
@@ -229,22 +231,45 @@ public class MainActivity extends BaseActivity
 //        } catch (IllegalAccessException e) {
 //            e.printStackTrace();
 //        }
+        Resources.Theme theme = getTheme();
 
         TypedValue colorPrimary = new TypedValue();
-        Resources.Theme theme = getTheme();
         theme.resolveAttribute(R.attr.colorPrimary, colorPrimary, true);
-        //更新Toolbar的UI
+
+        TypedValue colorPrimaryDark = new TypedValue();
+        theme.resolveAttribute(R.attr.colorPrimaryDark, colorPrimaryDark, true);
+
+        TypedValue colorAccent = new TypedValue();
+        theme.resolveAttribute(R.attr.colorAccent, colorAccent, true);
+
+        TypedValue colorBackground = new TypedValue();
+        theme.resolveAttribute(R.attr.colorBackground, colorBackground, true);
+
+        TypedValue colorTextColor = new TypedValue();
+        theme.resolveAttribute(R.attr.colorTextColor, colorTextColor, true);
+
+        TypedValue navTextColor = new TypedValue();
+        theme.resolveAttribute(R.attr.navTextColor, navTextColor, true);
+
+        //更新Toolbar的背景
         mToolbar.setBackgroundResource(colorPrimary.resourceId);
-        //更新TabLayout的UI
+        //更新TabLayout的背景
         TabLayout mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
         mTabLayout.setBackgroundResource(colorPrimary.resourceId);
-
+        //更新侧滑菜单标题栏背景及字体颜色
         View navigationHeader = navigationView.getHeaderView(0);
         if (isDay) {
             navigationHeader.setBackgroundResource(R.drawable.side_nav_bar_day);
         } else {
             navigationHeader.setBackgroundResource(R.drawable.side_nav_bar_night);
         }
+        TextView tvHeader = (TextView) navigationHeader.findViewById(R.id.textView);
+        tvHeader.setTextColor(ContextCompat.getColor(mContext, navTextColor.resourceId));
+        //更新侧滑菜单背景
+        navigationView.setBackgroundResource(colorBackground.resourceId);
+        //更新侧滑菜单字体颜色
+        navigationView.setItemTextColor(ContextCompat.getColorStateList(mContext, colorTextColor.resourceId));
+        navigationView.setItemIconTintList(ContextCompat.getColorStateList(mContext, colorTextColor.resourceId));
 
         refreshStatusBar();
     }
@@ -298,22 +323,32 @@ public class MainActivity extends BaseActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_person) {
-            initViewPager("人物", TYPE_PERSON);
-        } else if (id == R.id.nav_house) {
-            initViewPager("家族", TYPE_HOUSE);
-        } else if (id == R.id.nav_history) {
-            initViewPager("历史", TYPE_HISTORY);
-        } else if (id == R.id.nav_castles) {
-            initViewPager("城堡", TYPE_CASTLE);
-        } else {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.nav_person:
+                initViewPager("人物", TYPE_PERSON);
+                drawer.closeDrawer(GravityCompat.START);
+                break;
+            case R.id.nav_house:
+                initViewPager("家族", TYPE_HOUSE);
+                drawer.closeDrawer(GravityCompat.START);
+                break;
+            case R.id.nav_history:
+                initViewPager("历史", TYPE_HISTORY);
+                drawer.closeDrawer(GravityCompat.START);
+                break;
+            case R.id.nav_castles:
+                initViewPager("城堡", TYPE_CASTLE);
+                drawer.closeDrawer(GravityCompat.START);
+                break;
+            case R.id.nav_night:
+                boolean isChecked = switchCompat.isChecked();
+                if (isChecked) {
+                    switchCompat.setChecked(false);
+                } else {
+                    switchCompat.setChecked(true);
+                }
+                break;
         }
-
-        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 

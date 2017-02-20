@@ -2,4 +2,5 @@
 <resources>
     <attr name="colorBackground" format="color" />
     <attr name="colorTextColor" format="color" />
+    <attr name="navTextColor" format="color" />
 </resources>
