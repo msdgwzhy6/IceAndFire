@@ -43,7 +43,13 @@ public abstract class BaseActivity extends AppCompatActivity {
         //初始化Realm
         Realm.init(this);
         RealmConfiguration realmConfig = new RealmConfiguration.Builder().build();
-        mRealm = Realm.getInstance(realmConfig);
+        try {
+            mRealm = Realm.getInstance(realmConfig);
+        } catch (RuntimeException e) {
+            //删除数据库后重新初始化
+            Realm.deleteRealm(realmConfig);
+            mRealm = Realm.getInstance(realmConfig);
+        }
 
         //初始化Retrofit
         Retrofit retrofit = new Retrofit.Builder()
