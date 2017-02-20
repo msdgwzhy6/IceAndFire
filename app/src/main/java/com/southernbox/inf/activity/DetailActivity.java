@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.View;
@@ -17,7 +16,6 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.southernbox.inf.R;
 import com.southernbox.inf.js.Js2Java;
-import com.southernbox.inf.util.DayNightHelper;
 import com.southernbox.inf.util.ServerAPI;
 
 /**
@@ -26,7 +24,7 @@ import com.southernbox.inf.util.ServerAPI;
  */
 
 @SuppressLint("SetJavaScriptEnabled")
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends BaseActivity {
 
     private Toolbar mToolbar;
     private ImageView mImageView;
@@ -48,14 +46,6 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        DayNightHelper mDayNightHelper = new DayNightHelper(this);
-        if (mDayNightHelper.isDay()) {
-            setTheme(R.style.DayTheme);
-        } else {
-            setTheme(R.style.NightTheme);
-        }
-
         setContentView(R.layout.activity_detail);
         Bundle bundle = getIntent().getExtras();
         title = bundle.getString("title");

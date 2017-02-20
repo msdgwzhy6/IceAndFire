@@ -3,7 +3,6 @@ package com.southernbox.inf.activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -17,7 +16,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
@@ -28,32 +26,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.southernbox.inf.R;
 import com.southernbox.inf.entity.ContentDTO;
 import com.southernbox.inf.entity.TabDTO;
 import com.southernbox.inf.pager.ItemViewPager;
 import com.southernbox.inf.util.DayNightHelper;
-import com.southernbox.inf.util.RequestServes;
-import com.southernbox.inf.util.ServerAPI;
 import com.southernbox.inf.util.ToastUtil;
 
 import java.util.List;
-
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Retrofit;
-import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 /**
  * Created SouthernBox on 2016/3/27.
  * 主页
  */
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private final static String TYPE_PERSON = "person";
@@ -61,105 +48,25 @@ public class MainActivity extends AppCompatActivity
     private final static String TYPE_HISTORY = "history";
     private final static String TYPE_CASTLE = "castle";
 
-    private Context mContext;
     private Toolbar mToolbar;
     private DrawerLayout drawer;
-    //    private List<Option> optionList;
     private List<TabDTO> tabList;
-    //    public static ArrayList<ItemViewPager> viewPagers;
     private List<ContentDTO> contentList;
     private NavigationView navigationView;
-    private DayNightHelper mDayNightHelper;
-    private Realm mRealm;
-    private boolean loadTabComplete;
-    private boolean loadContentComplete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mDayNightHelper = new DayNightHelper(this);
-        if (mDayNightHelper.isDay()) {
-            setTheme(R.style.DayTheme);
-        } else {
-            setTheme(R.style.NightTheme);
-        }
         setContentView(R.layout.activity_main);
         initToolBar();
         initDrawerLayout();
         initNavigationView();
 
-        mContext = this;
-
-        Realm.init(this);
-        RealmConfiguration realmConfig = new RealmConfiguration.Builder().build();
-        mRealm = Realm.getInstance(realmConfig);
-
-        // 优先加载本地缓存数据
+        //从缓存加载数据
         tabList = mRealm.where(TabDTO.class).findAll();
         if (tabList != null) {
             initViewPager("人物", TYPE_PERSON);
         }
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(ServerAPI.BASE_URL + "/")
-                //增加返回值为String的支持
-                .addConverterFactory(ScalarsConverterFactory.create())
-//                //增加返回值为Gson的支持(以实体类返回)
-//                .addConverterFactory(GsonConverterFactory.create())
-//                //增加返回值为Oservable<T>的支持
-//                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .build();
-
-        RequestServes requestServes = retrofit.create(RequestServes.class);//这里采用的是Java的动态代理模式
-
-        //获取标签数据
-        Call<String> tabCall = requestServes.getTab();
-        tabCall.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(Call<String> call, retrofit2.Response<String> response) {
-                String responseString = response.body();
-                Gson gson = new Gson();
-                tabList = gson.fromJson(responseString, new TypeToken<List<TabDTO>>() {
-                }.getType());
-                mRealm.beginTransaction();
-                mRealm.copyToRealmOrUpdate(tabList);
-                mRealm.commitTransaction();
-                loadTabComplete = true;
-                if (loadContentComplete && tabList != null) {
-                    initViewPager("人物", TYPE_PERSON);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<String> call, Throwable t) {
-                ToastUtil.show(mContext, "网络连接失败");
-            }
-        });
-
-        //获取内容数据
-        Call<String> contentCall = requestServes.getContent();
-        contentCall.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(Call<String> call, retrofit2.Response<String> response) {
-                String responseString = response.body();
-                Gson gson = new Gson();
-                contentList = gson.fromJson(responseString, new TypeToken<List<ContentDTO>>() {
-                }.getType());
-                mRealm.beginTransaction();
-                mRealm.copyToRealmOrUpdate(contentList);
-                mRealm.commitTransaction();
-                loadContentComplete = true;
-                if (loadTabComplete && tabList != null) {
-                    initViewPager("人物", TYPE_PERSON);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<String> call, Throwable t) {
-                ToastUtil.show(mContext, "网络连接失败");
-            }
-        });
-
     }
 
     private void initToolBar() {
@@ -226,7 +133,7 @@ public class MainActivity extends AppCompatActivity
         Bitmap cacheBitmap = getCacheBitmapFromView(decorView);
         if (decorView instanceof ViewGroup && cacheBitmap != null) {
             final View view = new View(this);
-            view.setBackgroundDrawable(new BitmapDrawable(getResources(), cacheBitmap));
+            view.setBackground(new BitmapDrawable(getResources(), cacheBitmap));
             ViewGroup.LayoutParams layoutParam = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT);
             ((ViewGroup) decorView).addView(view, layoutParam);
@@ -370,22 +277,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initViewPager(String title, String type) {
-
         tabList = mRealm.where(TabDTO.class)
                 .equalTo("firstType", type)
                 .findAll();
         if (tabList != null) {
             new ItemViewPager(mContext, title, tabList).initData();
         }
-
-//        viewPagers = new ArrayList<>();
-//        int size = optionList.size();
-//        for (int i = 0; i < size; i++) {
-//            viewPagers.add(new ItemViewPager(mContext, optionList.get(i)));
-//        }
-//        if (optionList.size() > 0) {
-//            viewPagers.get(0).initData();
-//        }
     }
 
     @Override
@@ -406,28 +303,21 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int position;
-
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.nav_person) {
             initViewPager("人物", TYPE_PERSON);
-//            position = 0;
         } else if (id == R.id.nav_house) {
             initViewPager("家族", TYPE_HOUSE);
-//            position = 1;
         } else if (id == R.id.nav_history) {
             initViewPager("历史", TYPE_HISTORY);
-//            position = 2;
         } else if (id == R.id.nav_castles) {
             initViewPager("城堡", TYPE_CASTLE);
-//            position = 3;
         } else {
             return true;
         }
 
-//        viewPagers.get(position).initData();
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }

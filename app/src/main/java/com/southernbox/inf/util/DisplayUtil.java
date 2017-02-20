@@ -8,7 +8,7 @@ import android.util.DisplayMetrics;
  * 尺寸转换工具类
  */
 
-public class Dp2PxUtil {
+public class DisplayUtil {
 
     public static int getPx(Context context, int dp) {
         //获取屏幕密度

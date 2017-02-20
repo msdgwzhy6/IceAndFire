@@ -1,5 +1,10 @@
 package com.southernbox.inf.util;
 
+import com.southernbox.inf.entity.ContentDTO;
+import com.southernbox.inf.entity.TabDTO;
+
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -18,9 +23,9 @@ public interface RequestServes {
     Call<String> getPerson(@Path("jsonUrl") String jsonUrl);
 
     @GET("tab.json")
-    Call<String> getTab();
+    Call<List<TabDTO>> getTab();
 
     @GET("content.json")
-    Call<String> getContent();
+    Call<List<ContentDTO>> getContent();
 
 }
