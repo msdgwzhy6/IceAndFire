@@ -80,9 +80,12 @@ public class IndexActivity extends BaseActivity {
             @Override
             public void onResponse(Call<List<TabDTO>> call, retrofit2.Response<List<TabDTO>> response) {
                 List<TabDTO> tabList = response.body();
-                mRealm.beginTransaction();
-                mRealm.copyToRealmOrUpdate(tabList);
-                mRealm.commitTransaction();
+                if (tabList != null) {
+                    //缓存到数据库
+                    mRealm.beginTransaction();
+                    mRealm.copyToRealmOrUpdate(tabList);
+                    mRealm.commitTransaction();
+                }
                 loadTabComplete = true;
                 goMainPage();
             }
@@ -91,8 +94,8 @@ public class IndexActivity extends BaseActivity {
             public void onFailure(Call<List<TabDTO>> call, Throwable t) {
                 List<TabDTO> tabList = mRealm.where(TabDTO.class).findAll();
                 //有缓存数据可正常跳转，没有则提示点击重试
-                if (tabList != null && tabList.size() > 0) {
-                    ToastUtil.show(mContext, "网络请求失败");
+                if (tabList != null) {
+                    ToastUtil.show(mContext, "网络连接失败");
                     loadTabComplete = true;
                     goMainPage();
                 } else {
@@ -111,9 +114,12 @@ public class IndexActivity extends BaseActivity {
             @Override
             public void onResponse(Call<List<ContentDTO>> call, retrofit2.Response<List<ContentDTO>> response) {
                 List<ContentDTO> contentList = response.body();
-                mRealm.beginTransaction();
-                mRealm.copyToRealmOrUpdate(contentList);
-                mRealm.commitTransaction();
+                if (contentList != null) {
+                    //缓存到数据库
+                    mRealm.beginTransaction();
+                    mRealm.copyToRealmOrUpdate(contentList);
+                    mRealm.commitTransaction();
+                }
                 loadContentComplete = true;
                 goMainPage();
             }
@@ -122,8 +128,8 @@ public class IndexActivity extends BaseActivity {
             public void onFailure(Call<List<ContentDTO>> call, Throwable t) {
                 List<ContentDTO> contentList = mRealm.where(ContentDTO.class).findAll();
                 //有缓存数据可正常跳转，没有则提示点击重试
-                if (contentList != null && contentList.size() > 0) {
-                    ToastUtil.show(mContext, "网络请求失败");
+                if (contentList != null) {
+                    ToastUtil.show(mContext, "网络连接失败");
                     loadContentComplete = true;
                     goMainPage();
                 } else {
@@ -142,7 +148,7 @@ public class IndexActivity extends BaseActivity {
     }
 
     private void netError() {
-        ToastUtil.show(mContext, "网络请求失败，请点击重试");
+        ToastUtil.show(mContext, "网络连接失败，请点击重试");
         ivIndex.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

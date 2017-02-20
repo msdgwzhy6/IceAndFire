@@ -29,7 +29,7 @@ import android.widget.CompoundButton;
 
 import com.southernbox.inf.R;
 import com.southernbox.inf.entity.TabDTO;
-import com.southernbox.inf.pager.ItemViewPager;
+import com.southernbox.inf.pager.MainViewPager;
 import com.southernbox.inf.util.DayNightHelper;
 import com.southernbox.inf.util.ToastUtil;
 
@@ -60,12 +60,8 @@ public class MainActivity extends BaseActivity
         initToolBar();
         initDrawerLayout();
         initNavigationView();
-
-        //从缓存加载数据
-        tabList = mRealm.where(TabDTO.class).findAll();
-        if (tabList != null) {
-            initViewPager("人物", TYPE_PERSON);
-        }
+        //显示首页“人物”数据
+        initViewPager("人物", TYPE_PERSON);
     }
 
     private void initToolBar() {
@@ -275,12 +271,12 @@ public class MainActivity extends BaseActivity
         }
     }
 
-    private void initViewPager(String title, String type) {
+    private void initViewPager(String title, String firstType) {
         tabList = mRealm.where(TabDTO.class)
-                .equalTo("firstType", type)
+                .equalTo("firstType", firstType)
                 .findAll();
-        if (tabList != null) {
-            new ItemViewPager(mContext, title, tabList).initData();
+        if (tabList != null && tabList.size() > 0) {
+            new MainViewPager(mContext, title, tabList).initData();
         }
     }
 

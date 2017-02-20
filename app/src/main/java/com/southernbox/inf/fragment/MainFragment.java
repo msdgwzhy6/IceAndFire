@@ -16,32 +16,58 @@ import com.southernbox.inf.R;
 import com.southernbox.inf.adapter.MainAdapter;
 import com.southernbox.inf.entity.ContentDTO;
 import com.southernbox.inf.util.DisplayUtil;
+import com.southernbox.inf.util.RequestServes;
+import com.southernbox.inf.util.ServerAPI;
+import com.southernbox.inf.util.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by SouthernBox on 2016/3/27.
  * 首页Fragment
  */
 
-public class ItemFragment extends Fragment {
+public class MainFragment extends Fragment {
     private Context mContext;
-    private String type;
+    private String firstType;
+    private String secondType;
     private View rootView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private MainAdapter adapter;
     public List<ContentDTO> contentList = new ArrayList<>();
     private Realm mRealm;
 
+    /**
+     * 获取对应的首页Fragment
+     *
+     * @param firstType  一级分类
+     * @param secondType 二级分类
+     * @return 对应的Fragment
+     */
+    public static MainFragment newInstance(String firstType, String secondType) {
+        MainFragment fragment = new MainFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("firstType", firstType);
+        bundle.putString("secondType", secondType);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getActivity();
-        type = getArguments().getString("type");
+        Bundle bundle = getArguments();
+        firstType = bundle.getString("firstType");
+        secondType = bundle.getString("secondType");
         Realm.init(getContext());
         RealmConfiguration realmConfig = new RealmConfiguration.Builder().build();
         mRealm = Realm.getInstance(realmConfig);
@@ -52,17 +78,11 @@ public class ItemFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        if (rootView == null) {
-            rootView = LayoutInflater.from(mContext)
-                    .inflate(R.layout.fragment_home, container, false);
-            initRecyclerView();
-            initSwipeRefreshLayout();
-        } else {
-            ViewGroup parent = (ViewGroup) rootView.getParent();
-            if (parent != null) {
-                parent.removeView(rootView);
-            }
-        }
+        rootView = LayoutInflater.from(mContext)
+                .inflate(R.layout.fragment_home, container, false);
+        initRecyclerView();
+        initSwipeRefreshLayout();
+        showData();
         return rootView;
     }
 
@@ -86,17 +106,51 @@ public class ItemFragment extends Fragment {
                     }
                 };
         mSwipeRefreshLayout.setOnRefreshListener(refreshListener);
-        refreshListener.onRefresh();
     }
 
+    /**
+     * 加载网络数据
+     */
     private void loadData() {
-        mSwipeRefreshLayout.setRefreshing(false);
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(ServerAPI.BASE_URL)
+                //增加返回值为Gson的支持(以实体类返回)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        RequestServes requestServes = retrofit.create(RequestServes.class);
+        Call<List<ContentDTO>> call = requestServes.getContent();
+        call.enqueue(new Callback<List<ContentDTO>>() {
+            @Override
+            public void onResponse(Call<List<ContentDTO>> call, retrofit2.Response<List<ContentDTO>> response) {
+                mSwipeRefreshLayout.setRefreshing(false);
+                List<ContentDTO> list = response.body();
+                if (list != null) {
+                    //缓存到数据库
+                    mRealm.beginTransaction();
+                    mRealm.copyToRealmOrUpdate(list);
+                    mRealm.commitTransaction();
+                }
+                showData();
+            }
 
-        //加载本地缓存数据
+            @Override
+            public void onFailure(Call<List<ContentDTO>> call, Throwable t) {
+                mSwipeRefreshLayout.setRefreshing(false);
+                ToastUtil.show(mContext, "网络连接失败");
+            }
+        });
+    }
+
+    /**
+     * 展示数据
+     */
+    private void showData() {
+        //从本地数据库获取
         contentList.clear();
-        List<ContentDTO> cacheList = mRealm
+        final List<ContentDTO> cacheList = mRealm
                 .where(ContentDTO.class)
-                .equalTo("secondType",type)
+                .equalTo("firstType", firstType)
+                .equalTo("secondType", secondType)
                 .findAll();
         contentList.clear();
         contentList.addAll(cacheList);
