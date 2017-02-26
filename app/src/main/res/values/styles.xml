@@ -28,10 +28,10 @@
         <item name="colorAccent">@color/color868686</item>
         <item name="colorBackground">@color/color4F4F4F</item>
         <item name="pagerBackground">@color/color3A3A3A</item>
-        <item name="darkTextColor">@color/white50</item>
-        <item name="lightTextColor">@color/white50</item>
+        <item name="darkTextColor">@color/color9F9F9F</item>
+        <item name="lightTextColor">@color/color9F9F9F</item>
         <!--AppBarLayout图标颜色-->
-        <item name="colorControlNormal">@color/white50</item>
+        <item name="colorControlNormal">@color/color9F9F9F</item>
     </style>
 
 </resources>

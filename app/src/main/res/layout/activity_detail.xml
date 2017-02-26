@@ -12,8 +12,7 @@
             android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark"
-            app:contentScrim="@color/colorPrimary"
+            app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <ImageView
@@ -25,11 +24,10 @@
                 app:layout_collapseMode="parallax" />
 
             <android.support.v7.widget.Toolbar
-                android:id="@+id/detail_toolbar"
+                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark"
-                app:layout_collapseMode="pin" />
+                app:layout_collapseMode="pin"/>
 
         </android.support.design.widget.CollapsingToolbarLayout>
 

@@ -3,11 +3,15 @@ package com.southernbox.inf.activity;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebView;
@@ -66,7 +70,18 @@ public class DetailActivity extends BaseActivity {
     }
 
     public void initView() {
-        mToolbar = (Toolbar) findViewById(R.id.detail_toolbar);
+        Resources.Theme theme = mContext.getTheme();
+        TypedValue lightTextColor = new TypedValue();
+        theme.resolveAttribute(R.attr.lightTextColor, lightTextColor, true);
+        CollapsingToolbarLayout mCollapsingToolbarLayout =
+                (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        mCollapsingToolbarLayout
+                .setCollapsedTitleTextColor(ContextCompat
+                        .getColor(mContext, lightTextColor.resourceId));
+        mCollapsingToolbarLayout
+                .setExpandedTitleTextColor(ContextCompat
+                        .getColorStateList(mContext, lightTextColor.resourceId));
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mImageView = (ImageView) findViewById(R.id.image_view);
         mWebView = (WebView) findViewById(R.id.web_view);
         mWebView.getSettings().setJavaScriptEnabled(true);

@@ -24,7 +24,6 @@
 
     <color name="color333333">#333333</color>
     <color name="color666666">#666666</color>
-    <!--50%透明度的白色-->
-    <color name="white50">#80ffffff</color>
+    <color name="color9F9F9F">#9F9F9F</color>
 
 </resources>
