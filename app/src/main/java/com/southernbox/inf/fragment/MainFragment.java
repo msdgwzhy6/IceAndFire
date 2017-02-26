@@ -178,8 +178,8 @@ public class MainFragment extends Fragment {
             mSwipeRefreshLayout.setBackgroundResource(pagerBackground.resourceId);
             //更新Item的背景及字体颜色
             int childCount = mRecyclerView.getChildCount();
-            for (int childIndex = 0; childIndex < childCount; childIndex++) {
-                ViewGroup childView = (ViewGroup) mRecyclerView.getChildAt(childIndex);
+            for (int position = 0; position < childCount; position++) {
+                ViewGroup childView = (ViewGroup) mRecyclerView.getChildAt(position);
                 View vContent = childView.findViewById(R.id.ll_content);
                 vContent.setBackgroundResource(colorBackground.resourceId);
                 TextView tvName = (TextView) childView.findViewById(R.id.tv_name);
@@ -194,7 +194,7 @@ public class MainFragment extends Fragment {
                 Field declaredField = recyclerViewClass.getDeclaredField("mRecycler");
                 declaredField.setAccessible(true);
                 Method declaredMethod = Class.forName(RecyclerView.Recycler.class.getName())
-                        .getDeclaredMethod("clear", (Class<?>[]) new Class[0]);
+                        .getDeclaredMethod("clear",new Class[0]);
                 declaredMethod.setAccessible(true);
                 declaredMethod.invoke(declaredField.get(mRecyclerView), new Object[0]);
                 RecyclerView.RecycledViewPool recycledViewPool = mRecyclerView.getRecycledViewPool();
