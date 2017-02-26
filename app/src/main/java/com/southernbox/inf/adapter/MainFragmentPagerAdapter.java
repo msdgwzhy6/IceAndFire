@@ -4,6 +4,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.southernbox.inf.fragment.MainFragment;
+
 import java.util.ArrayList;
 
 /**
@@ -11,14 +13,14 @@ import java.util.ArrayList;
  * 首页ViewPager适配器
  */
 
-public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
+public class MainFragmentPagerAdapter extends FragmentPagerAdapter {
 
-    private ArrayList<Fragment> fragments;
+    private ArrayList<MainFragment> fragments;
     private String[] titles;
 
-    public MyFragmentPagerAdapter(FragmentManager fm,
-                                  ArrayList<Fragment> fragments,
-                                  String[] titles) {
+    public MainFragmentPagerAdapter(FragmentManager fm,
+                                    ArrayList<MainFragment> fragments,
+                                    String[] titles) {
         super(fm);
         this.fragments = fragments;
         this.titles = titles;

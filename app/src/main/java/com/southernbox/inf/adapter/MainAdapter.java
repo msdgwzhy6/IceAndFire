@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -42,10 +41,9 @@ public class MainAdapter extends RecyclerView.Adapter {
         View rootView = LayoutInflater.from(mContext).inflate(R.layout.item_list, parent, false);
 
         MyViewHolder holder = new MyViewHolder(rootView);
-        holder.holderPicIv = (ImageView) rootView.findViewById(R.id.personItem_pic_iv);
-        holder.holderNameTv = (TextView) rootView.findViewById(R.id.personItem_name_tv);
-        holder.holderIntroTv = (TextView) rootView.findViewById(R.id.personItem_intro_tv);
-        holder.holderTextTv = (LinearLayout) rootView.findViewById(R.id.personItem_text_ll);
+        holder.ivImg = (ImageView) rootView.findViewById(R.id.iv_img);
+        holder.tvName = (TextView) rootView.findViewById(R.id.tv_name);
+        holder.tvDesc = (TextView) rootView.findViewById(R.id.tv_desc);
 
         return holder;
     }
@@ -55,15 +53,15 @@ public class MainAdapter extends RecyclerView.Adapter {
         final MyViewHolder viewHolder = (MyViewHolder) holder;
         final ContentDTO content = mList.get(position);
 
-        viewHolder.holderNameTv.setText(content.getName());
-        viewHolder.holderIntroTv.setText(content.getIntro());
+        viewHolder.tvName.setText(content.getName());
+        viewHolder.tvDesc.setText(content.getIntro());
 
         Glide
                 .with(mContext)
                 .load(ServerAPI.BASE_URL + content.getImg())
                 .override(480, 270)
                 .crossFade()
-                .into(viewHolder.holderPicIv);
+                .into(viewHolder.ivImg);
 
         final View itemRoot = viewHolder.itemView;
         itemRoot.setOnClickListener(new View.OnClickListener() {
@@ -76,7 +74,7 @@ public class MainAdapter extends RecyclerView.Adapter {
 
     @SuppressWarnings("unchecked")
     private void onItemClick(ContentDTO content, MyViewHolder holder) {
-        Pair[] pairs = new Pair[]{new Pair(holder.holderPicIv, "tran_01")};
+        Pair[] pairs = new Pair[]{new Pair(holder.ivImg, "tran_01")};
         ActivityOptionsCompat options = ActivityOptionsCompat
                 .makeSceneTransitionAnimation(mainActivity, pairs);
 
@@ -95,10 +93,10 @@ public class MainAdapter extends RecyclerView.Adapter {
     }
 
     private class MyViewHolder extends RecyclerView.ViewHolder {
-        ImageView holderPicIv;
-        TextView holderNameTv;
-        TextView holderIntroTv;
-        LinearLayout holderTextTv;
+
+        ImageView ivImg;
+        TextView tvName;
+        TextView tvDesc;
 
         MyViewHolder(View itemView) {
             super(itemView);

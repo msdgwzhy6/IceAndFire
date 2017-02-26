@@ -2,13 +2,12 @@ package com.southernbox.inf.pager;
 
 import android.content.Context;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 
 import com.southernbox.inf.R;
 import com.southernbox.inf.activity.MainActivity;
-import com.southernbox.inf.adapter.MyFragmentPagerAdapter;
+import com.southernbox.inf.adapter.MainFragmentPagerAdapter;
 import com.southernbox.inf.entity.TabDTO;
 import com.southernbox.inf.fragment.MainFragment;
 
@@ -25,7 +24,7 @@ public class MainViewPager {
     private Toolbar mToolbar;
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
-    private ArrayList<Fragment> fragments;
+    private ArrayList<MainFragment> fragments;
     private String title;
     private String[] tabTitles;
     private List<TabDTO> tabList;
@@ -48,7 +47,7 @@ public class MainViewPager {
     public void initData() {
         initFragment();
         mToolbar.setTitle(title);
-        mViewPager.setAdapter(new MyFragmentPagerAdapter(
+        mViewPager.setAdapter(new MainFragmentPagerAdapter(
                 mainActivity.getSupportFragmentManager(),
                 fragments, tabTitles));
         mTabLayout.setupWithViewPager(mViewPager);
@@ -64,6 +63,12 @@ public class MainViewPager {
             MainFragment fragment = MainFragment
                     .newInstance(tab.getFirstType(), tab.getSecondType());
             fragments.add(fragment);
+        }
+    }
+
+    public void refreshUI() {
+        for (MainFragment fragment : fragments) {
+            fragment.refreshUI();
         }
     }
 }

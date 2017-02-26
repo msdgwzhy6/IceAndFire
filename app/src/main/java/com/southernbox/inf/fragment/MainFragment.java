@@ -2,15 +2,19 @@ package com.southernbox.inf.fragment;
 
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.southernbox.inf.R;
 import com.southernbox.inf.adapter.MainAdapter;
@@ -20,6 +24,8 @@ import com.southernbox.inf.util.RequestServes;
 import com.southernbox.inf.util.ServerAPI;
 import com.southernbox.inf.util.ToastUtil;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +50,7 @@ public class MainFragment extends Fragment {
     private MainAdapter adapter;
     public List<ContentDTO> contentList = new ArrayList<>();
     private Realm mRealm;
+    private RecyclerView mRecyclerView;
 
     /**
      * 获取对应的首页Fragment
@@ -79,7 +86,7 @@ public class MainFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         rootView = LayoutInflater.from(mContext)
-                .inflate(R.layout.fragment_home, container, false);
+                .inflate(R.layout.fragment_main, container, false);
         initRecyclerView();
         initSwipeRefreshLayout();
         showData();
@@ -87,14 +94,14 @@ public class MainFragment extends Fragment {
     }
 
     private void initRecyclerView() {
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.home_content_rv);
-        recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         adapter = new MainAdapter(getActivity(), contentList);
-        recyclerView.setAdapter(adapter);
+        mRecyclerView.setAdapter(adapter);
     }
 
     private void initSwipeRefreshLayout() {
-        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.home_refresh_srl);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.switch_refresh_layout);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimaryDark);
         mSwipeRefreshLayout.setProgressViewOffset(false,
                 DisplayUtil.getPx(mContext, -50), DisplayUtil.getPx(mContext, 20));
@@ -155,6 +162,47 @@ public class MainFragment extends Fragment {
         contentList.clear();
         contentList.addAll(cacheList);
         adapter.notifyDataSetChanged();
+    }
+
+    public void refreshUI() {
+        if (mContext != null) {
+            Resources.Theme theme = mContext.getTheme();
+            TypedValue pagerBackground = new TypedValue();
+            theme.resolveAttribute(R.attr.pagerBackground, pagerBackground, true);
+            TypedValue colorBackground = new TypedValue();
+            theme.resolveAttribute(R.attr.colorBackground, colorBackground, true);
+            TypedValue darkTextColor = new TypedValue();
+            theme.resolveAttribute(R.attr.darkTextColor, darkTextColor, true);
+
+            //更新背景颜色
+            mSwipeRefreshLayout.setBackgroundResource(pagerBackground.resourceId);
+            //更新Item的背景及字体颜色
+            int childCount = mRecyclerView.getChildCount();
+            for (int childIndex = 0; childIndex < childCount; childIndex++) {
+                ViewGroup childView = (ViewGroup) mRecyclerView.getChildAt(childIndex);
+                View vContent = childView.findViewById(R.id.ll_content);
+                vContent.setBackgroundResource(colorBackground.resourceId);
+                TextView tvName = (TextView) childView.findViewById(R.id.tv_name);
+                tvName.setTextColor(ContextCompat.getColor(mContext, darkTextColor.resourceId));
+                TextView tvDesc = (TextView) childView.findViewById(R.id.tv_desc);
+                tvDesc.setTextColor(ContextCompat.getColor(mContext, darkTextColor.resourceId));
+            }
+
+            //让 RecyclerView 缓存在 Pool 中的 Item 失效
+            Class<RecyclerView> recyclerViewClass = RecyclerView.class;
+            try {
+                Field declaredField = recyclerViewClass.getDeclaredField("mRecycler");
+                declaredField.setAccessible(true);
+                Method declaredMethod = Class.forName(RecyclerView.Recycler.class.getName())
+                        .getDeclaredMethod("clear", (Class<?>[]) new Class[0]);
+                declaredMethod.setAccessible(true);
+                declaredMethod.invoke(declaredField.get(mRecyclerView), new Object[0]);
+                RecyclerView.RecycledViewPool recycledViewPool = mRecyclerView.getRecycledViewPool();
+                recycledViewPool.clear();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override

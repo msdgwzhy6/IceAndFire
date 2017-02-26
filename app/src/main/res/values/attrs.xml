@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="colorBackground" format="color" />
+    <attr name="pagerBackground" format="color" />
     <attr name="darkTextColor" format="color" />
     <attr name="lightTextColor" format="color" />
 </resources>

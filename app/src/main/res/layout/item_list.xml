@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
@@ -9,12 +10,14 @@
     app:cardElevation="8dp">
 
     <LinearLayout
+        android:id="@+id/ll_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?attr/colorBackground"
         android:orientation="vertical">
 
         <ImageView
-            android:id="@+id/personItem_pic_iv"
+            android:id="@+id/iv_img"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:layout_gravity="center_horizontal"
@@ -22,31 +25,32 @@
             android:scaleType="centerCrop" />
 
         <LinearLayout
-            android:id="@+id/personItem_text_ll"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/personItem_name_tv"
+                android:id="@+id/tv_name"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="6dp"
                 android:maxLines="1"
-                android:textColor="@color/dark"
-                android:textSize="20sp" />
+                android:textColor="?attr/darkTextColor"
+                android:textSize="20sp"
+                tools:text="韦德" />
 
             <TextView
-                android:id="@+id/personItem_intro_tv"
+                android:id="@+id/tv_desc"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="4dp"
                 android:maxLines="1"
-                android:textColor="@color/dark"
-                android:textSize="12sp" />
+                android:textColor="?attr/darkTextColor"
+                android:textSize="12sp"
+                tools:text="MVP" />
 
         </LinearLayout>
 

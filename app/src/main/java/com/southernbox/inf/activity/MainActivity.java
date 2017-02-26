@@ -54,6 +54,7 @@ public class MainActivity extends BaseActivity
     private DrawerLayout drawer;
     private NavigationView navigationView;
     private SwitchCompat switchCompat;
+    private MainViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -172,65 +173,6 @@ public class MainActivity extends BaseActivity
      * 刷新UI界面
      */
     private void refreshUI(boolean isDay) {
-//        TypedValue background = new TypedValue();//背景色
-//        TypedValue textColor = new TypedValue();//字体颜色
-//        Resources.Theme theme = getTheme();
-//        theme.resolveAttribute(R.attr.clockBackground, background, true);
-//        theme.resolveAttribute(R.attr.clockTextColor, textColor, true);
-
-//        mHeaderLayout.setBackgroundResource(background.resourceId);
-//        for (RelativeLayout layout : mLayoutList) {
-//            layout.setBackgroundResource(background.resourceId);
-//        }
-//        for (CheckBox checkBox : mCheckBoxList) {
-//            checkBox.setBackgroundResource(background.resourceId);
-//        }
-//        for (TextView textView : mTextViewList) {
-//            textView.setBackgroundResource(background.resourceId);
-//        }
-
-//        Resources resources = getResources();
-//        for (TextView textView : mTextViewList) {
-//            textView.setTextColor(resources.getColor(textColor.resourceId));
-//        }
-
-//        int childCount = mRecyclerView.getChildCount();
-//        for (int childIndex = 0; childIndex < childCount; childIndex++) {
-//            ViewGroup childView = (ViewGroup) mRecyclerView.getChildAt(childIndex);
-//            childView.setBackgroundResource(background.resourceId);
-//            View infoLayout = childView.findViewById(R.id.info_layout);
-//            infoLayout.setBackgroundResource(background.resourceId);
-//            TextView nickName = (TextView) childView.findViewById(R.id.tv_nickname);
-//            nickName.setBackgroundResource(background.resourceId);
-//            nickName.setTextColor(resources.getColor(textColor.resourceId));
-//            TextView motto = (TextView) childView.findViewById(R.id.tv_motto);
-//            motto.setBackgroundResource(background.resourceId);
-//            motto.setTextColor(resources.getColor(textColor.resourceId));
-//        }
-
-        //让 RecyclerView 缓存在 Pool 中的 Item 失效
-        //那么，如果是ListView，要怎么做呢？这里的思路是通过反射拿到 AbsListView 类中的 RecycleBin 对象，然后同样再用反射去调用 clear 方法
-//        Class<RecyclerView> recyclerViewClass = RecyclerView.class;
-//        try {
-//            Field declaredField = recyclerViewClass.getDeclaredField("mRecycler");
-//            declaredField.setAccessible(true);
-//            Method declaredMethod = Class.forName(RecyclerView.Recycler.class.getName()).getDeclaredMethod("clear", (Class<?>[]) new Class[0]);
-//            declaredMethod.setAccessible(true);
-//            declaredMethod.invoke(declaredField.get(mRecyclerView), new Object[0]);
-//            RecyclerView.RecycledViewPool recycledViewPool = mRecyclerView.getRecycledViewPool();
-//            recycledViewPool.clear();
-//
-//        } catch (NoSuchFieldException e) {
-//            e.printStackTrace();
-//        } catch (ClassNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (NoSuchMethodException e) {
-//            e.printStackTrace();
-//        } catch (InvocationTargetException e) {
-//            e.printStackTrace();
-//        } catch (IllegalAccessException e) {
-//            e.printStackTrace();
-//        }
         Resources.Theme theme = getTheme();
         TypedValue colorPrimary = new TypedValue();
         theme.resolveAttribute(R.attr.colorPrimary, colorPrimary, true);
@@ -275,6 +217,8 @@ public class MainActivity extends BaseActivity
         //更新侧滑菜单字体颜色
         navigationView.setItemTextColor(ContextCompat.getColorStateList(mContext, darkTextColor.resourceId));
         navigationView.setItemIconTintList(ContextCompat.getColorStateList(mContext, darkTextColor.resourceId));
+        //更新ViewPagerUI
+        mViewPager.refreshUI();
 
         refreshStatusBar();
     }
@@ -306,7 +250,8 @@ public class MainActivity extends BaseActivity
                 .equalTo("firstType", firstType)
                 .findAll();
         if (tabList != null && tabList.size() > 0) {
-            new MainViewPager(mContext, title, tabList).initData();
+            mViewPager = new MainViewPager(mContext, title, tabList);
+            mViewPager.initData();
         }
     }
 
