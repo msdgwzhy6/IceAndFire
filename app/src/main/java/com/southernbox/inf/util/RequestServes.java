@@ -16,11 +16,8 @@ import retrofit2.http.Path;
 
 public interface RequestServes {
 
-    @GET("/IceAndFireServer/option.json")
-    Call<String> getOption();
-
-    @GET("{jsonUrl}")
-    Call<String> getPerson(@Path("jsonUrl") String jsonUrl);
+    @GET("{url}")
+    Call<String> get(@Path("url") String url);
 
     @GET("tab.json")
     Call<List<TabDTO>> getTab();

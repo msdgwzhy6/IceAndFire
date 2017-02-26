@@ -21,6 +21,10 @@ import com.bumptech.glide.Glide;
 import com.southernbox.inf.R;
 import com.southernbox.inf.js.Js2Java;
 import com.southernbox.inf.util.ServerAPI;
+import com.southernbox.inf.util.ToastUtil;
+
+import retrofit2.Call;
+import retrofit2.Callback;
 
 /**
  * Created SouthernBox on 2016/3/27.
@@ -98,7 +102,28 @@ public class DetailActivity extends BaseActivity {
                 .crossFade()
                 .into(mImageView);
 
-        mWebView.loadUrl(ServerAPI.BASE_URL + html);
+//        mWebView.loadUrl(ServerAPI.BASE_URL+html);
+
+        Call<String> call = requestServes.get(html);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, retrofit2.Response<String> response) {
+                if (response.body() != null) {
+                    String htmlData = response.body();
+                    if (mDayNightHelper.isNight()) {
+                        htmlData = htmlData.replace("}\n\t\t</style>\n\t</head>",
+                                "color:#9F9F9F;}\n\t\t</style>\n\t</head>");
+                        htmlData = htmlData.replace("<body>", "<body bgcolor=\"#4F4F4F\">");
+                    }
+                    mWebView.loadDataWithBaseURL(null, htmlData, "text/html", "utf-8", null);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                ToastUtil.show(mContext, "网络连接失败，请重试");
+            }
+        });
 
         setSupportActionBar(mToolbar);
         ActionBar actionBar = getSupportActionBar();

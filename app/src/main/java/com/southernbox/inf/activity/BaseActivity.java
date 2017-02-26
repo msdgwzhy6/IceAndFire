@@ -14,6 +14,7 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 /**
  * Created by nanquan.lin on 2017/2/20 0020.
@@ -54,7 +55,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         //初始化Retrofit
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(ServerAPI.BASE_URL)
-                //增加返回值为Gson的支持(以实体类返回)
+                //增加返回值为String的支持
+                .addConverterFactory(ScalarsConverterFactory.create())
+                //增加返回值为实体类的支持
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         requestServes = retrofit.create(RequestServes.class);
