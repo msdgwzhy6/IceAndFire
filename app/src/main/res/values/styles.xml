@@ -8,18 +8,16 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-
     <!--白天主题-->
     <style name="DayTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorBackground">@android:color/white</item>
-        <item name="colorTextColor">@color/color3A3A3A</item>
-        <item name="navTextColor">@android:color/white</item>
+        <item name="darkTextColor">@color/color666666</item>
+        <item name="lightTextColor">@android:color/white</item>
+        <!--AppBarLayout图标颜色-->
+        <item name="colorControlNormal">@android:color/white</item>
     </style>
 
     <!--夜间主题-->
@@ -28,8 +26,10 @@
         <item name="colorPrimaryDark">@color/color3A3A3A</item>
         <item name="colorAccent">@color/color868686</item>
         <item name="colorBackground">@color/color4F4F4F</item>
-        <item name="colorTextColor">@color/color8A9599</item>
-        <item name="navTextColor">@color/color8A9599</item>
+        <item name="darkTextColor">@color/color8A9599</item>
+        <item name="lightTextColor">@color/white50</item>
+        <!--AppBarLayout图标颜色-->
+        <item name="colorControlNormal">@color/white50</item>
     </style>
 
 </resources>

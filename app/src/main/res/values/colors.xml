@@ -22,4 +22,9 @@
     <color name="color868686">#868686</color>
     <color name="color8A9599">#8A9599</color>
 
+    <color name="color333333">#333333</color>
+    <color name="color666666">#666666</color>
+    <!--50%透明度的白色-->
+    <color name="white50">#80ffffff</color>
+
 </resources>

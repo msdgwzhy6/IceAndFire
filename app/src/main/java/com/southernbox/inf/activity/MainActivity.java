@@ -6,6 +6,7 @@ import android.animation.ObjectAnimator;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -51,7 +52,6 @@ public class MainActivity extends BaseActivity
 
     private Toolbar mToolbar;
     private DrawerLayout drawer;
-    private List<TabDTO> tabList;
     private NavigationView navigationView;
     private SwitchCompat switchCompat;
 
@@ -232,30 +232,35 @@ public class MainActivity extends BaseActivity
 //            e.printStackTrace();
 //        }
         Resources.Theme theme = getTheme();
-
         TypedValue colorPrimary = new TypedValue();
         theme.resolveAttribute(R.attr.colorPrimary, colorPrimary, true);
-
         TypedValue colorPrimaryDark = new TypedValue();
         theme.resolveAttribute(R.attr.colorPrimaryDark, colorPrimaryDark, true);
-
         TypedValue colorAccent = new TypedValue();
         theme.resolveAttribute(R.attr.colorAccent, colorAccent, true);
-
         TypedValue colorBackground = new TypedValue();
         theme.resolveAttribute(R.attr.colorBackground, colorBackground, true);
+        TypedValue darkTextColor = new TypedValue();
+        theme.resolveAttribute(R.attr.darkTextColor, darkTextColor, true);
+        TypedValue lightTextColor = new TypedValue();
+        theme.resolveAttribute(R.attr.lightTextColor, lightTextColor, true);
 
-        TypedValue colorTextColor = new TypedValue();
-        theme.resolveAttribute(R.attr.colorTextColor, colorTextColor, true);
-
-        TypedValue navTextColor = new TypedValue();
-        theme.resolveAttribute(R.attr.navTextColor, navTextColor, true);
-
-        //更新Toolbar的背景
+        //更新Toolbar的背景、标题、图标颜色
         mToolbar.setBackgroundResource(colorPrimary.resourceId);
-        //更新TabLayout的背景
+        mToolbar.setTitleTextColor(ContextCompat.getColor(mContext, lightTextColor.resourceId));
+        Drawable navigationIcon = mToolbar.getNavigationIcon();
+        if (navigationIcon != null) {
+            if (isDay) {
+                mToolbar.getNavigationIcon().setAlpha(255);
+            } else {
+                mToolbar.getNavigationIcon().setAlpha(128);
+            }
+        }
+
+        //更新TabLayout的背景及标识线颜色
         TabLayout mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
         mTabLayout.setBackgroundResource(colorPrimary.resourceId);
+        mTabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(mContext, colorAccent.resourceId));
         //更新侧滑菜单标题栏背景及字体颜色
         View navigationHeader = navigationView.getHeaderView(0);
         if (isDay) {
@@ -264,12 +269,12 @@ public class MainActivity extends BaseActivity
             navigationHeader.setBackgroundResource(R.drawable.side_nav_bar_night);
         }
         TextView tvHeader = (TextView) navigationHeader.findViewById(R.id.textView);
-        tvHeader.setTextColor(ContextCompat.getColor(mContext, navTextColor.resourceId));
+        tvHeader.setTextColor(ContextCompat.getColor(mContext, lightTextColor.resourceId));
         //更新侧滑菜单背景
         navigationView.setBackgroundResource(colorBackground.resourceId);
         //更新侧滑菜单字体颜色
-        navigationView.setItemTextColor(ContextCompat.getColorStateList(mContext, colorTextColor.resourceId));
-        navigationView.setItemIconTintList(ContextCompat.getColorStateList(mContext, colorTextColor.resourceId));
+        navigationView.setItemTextColor(ContextCompat.getColorStateList(mContext, darkTextColor.resourceId));
+        navigationView.setItemIconTintList(ContextCompat.getColorStateList(mContext, darkTextColor.resourceId));
 
         refreshStatusBar();
     }
@@ -297,7 +302,7 @@ public class MainActivity extends BaseActivity
     }
 
     private void initViewPager(String title, String firstType) {
-        tabList = mRealm.where(TabDTO.class)
+        List<TabDTO> tabList = mRealm.where(TabDTO.class)
                 .equalTo("firstType", firstType)
                 .findAll();
         if (tabList != null && tabList.size() > 0) {
