@@ -102,8 +102,6 @@ public class DetailActivity extends BaseActivity {
                 .crossFade()
                 .into(mImageView);
 
-//        mWebView.loadUrl(ServerAPI.BASE_URL+html);
-
         Call<String> call = requestServes.get(html);
         call.enqueue(new Callback<String>() {
             @Override
@@ -115,7 +113,7 @@ public class DetailActivity extends BaseActivity {
                                 "color:#9F9F9F;}\n\t\t</style>\n\t</head>");
                         htmlData = htmlData.replace("<body>", "<body bgcolor=\"#4F4F4F\">");
                     }
-                    mWebView.loadDataWithBaseURL(null, htmlData, "text/html", "utf-8", null);
+                    mWebView.loadDataWithBaseURL("file:///android_asset/", htmlData, "text/html", "utf-8", null);
                 }
             }
 
