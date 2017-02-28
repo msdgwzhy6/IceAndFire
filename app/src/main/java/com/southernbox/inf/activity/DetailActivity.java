@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ActivityCompat;
@@ -90,6 +91,21 @@ public class DetailActivity extends BaseActivity {
         mWebView = (WebView) findViewById(R.id.web_view);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.addJavascriptInterface(new Js2Java(this), "Android");
+
+        mToolbar.post(new Runnable() {
+            @Override
+            public void run() {
+                //设置Toolbar的图标颜色
+                Drawable navigationIcon = mToolbar.getNavigationIcon();
+                if (navigationIcon != null) {
+                    if (mDayNightHelper.isDay()) {
+                        mToolbar.getNavigationIcon().setAlpha(255);
+                    } else {
+                        mToolbar.getNavigationIcon().setAlpha(128);
+                    }
+                }
+            }
+        });
     }
 
     public void initData() {
