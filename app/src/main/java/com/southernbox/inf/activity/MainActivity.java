@@ -36,6 +36,8 @@ import com.southernbox.inf.util.DayNightHelper;
 import com.southernbox.inf.util.ToastUtil;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created SouthernBox on 2016/3/27.
@@ -63,7 +65,6 @@ public class MainActivity extends BaseActivity
         initToolBar();
         initDrawerLayout();
         initNavigationView();
-        //显示首页“人物”数据
         initViewPager("人物", TYPE_PERSON);
     }
 
@@ -74,6 +75,21 @@ public class MainActivity extends BaseActivity
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            public void run() {
+                //设置Toolbar的图标颜色
+                Drawable navigationIcon = mToolbar.getNavigationIcon();
+                if (navigationIcon != null) {
+                    if (mDayNightHelper.isDay()) {
+                        mToolbar.getNavigationIcon().setAlpha(255);
+                    } else {
+                        mToolbar.getNavigationIcon().setAlpha(128);
+                    }
+                }
+            }
+        }, 200);
     }
 
     private void initDrawerLayout() {

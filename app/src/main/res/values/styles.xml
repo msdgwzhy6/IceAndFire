@@ -17,7 +17,7 @@
         <item name="pagerBackground">@android:color/white</item>
         <item name="darkTextColor">@color/color666666</item>
         <item name="lightTextColor">@android:color/white</item>
-        <!--AppBarLayout图标颜色-->
+        <!--AppBarLayout图标颜色 通过透明度改变颜色-->
         <item name="colorControlNormal">@android:color/white</item>
     </style>
 
@@ -30,8 +30,8 @@
         <item name="pagerBackground">@color/color3A3A3A</item>
         <item name="darkTextColor">@color/color9F9F9F</item>
         <item name="lightTextColor">@color/color9F9F9F</item>
-        <!--AppBarLayout图标颜色-->
-        <item name="colorControlNormal">@color/color9F9F9F</item>
+        <!--AppBarLayout图标颜色 通过透明度改变颜色-->
+        <item name="colorControlNormal">@color/white</item>
     </style>
 
 </resources>
