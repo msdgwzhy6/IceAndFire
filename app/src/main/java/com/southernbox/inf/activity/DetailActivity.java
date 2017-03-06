@@ -74,7 +74,7 @@ public class DetailActivity extends BaseActivity {
         initData();
     }
 
-    public void initView() {
+    private void initView() {
         Resources.Theme theme = mContext.getTheme();
         TypedValue lightTextColor = new TypedValue();
         theme.resolveAttribute(R.attr.lightTextColor, lightTextColor, true);
@@ -108,7 +108,7 @@ public class DetailActivity extends BaseActivity {
         });
     }
 
-    public void initData() {
+    private void initData() {
         mToolbar.setTitle(title);
 
         Glide

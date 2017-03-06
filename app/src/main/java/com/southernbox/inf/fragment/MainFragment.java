@@ -48,7 +48,7 @@ public class MainFragment extends Fragment {
     private View rootView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private MainAdapter adapter;
-    public List<ContentDTO> contentList = new ArrayList<>();
+    private List<ContentDTO> contentList = new ArrayList<>();
     private Realm mRealm;
     private RecyclerView mRecyclerView;
 
@@ -194,7 +194,7 @@ public class MainFragment extends Fragment {
                 Field declaredField = recyclerViewClass.getDeclaredField("mRecycler");
                 declaredField.setAccessible(true);
                 Method declaredMethod = Class.forName(RecyclerView.Recycler.class.getName())
-                        .getDeclaredMethod("clear",new Class[0]);
+                        .getDeclaredMethod("clear", new Class[0]);
                 declaredMethod.setAccessible(true);
                 declaredMethod.invoke(declaredField.get(mRecyclerView), new Object[0]);
                 RecyclerView.RecycledViewPool recycledViewPool = mRecyclerView.getRecycledViewPool();
@@ -204,13 +204,6 @@ public class MainFragment extends Fragment {
             }
         }
     }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
-
 }
 
 

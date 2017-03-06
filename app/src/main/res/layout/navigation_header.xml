@@ -3,14 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="180dp"
     android:background="?attr/colorPrimary"
-    android:padding="16dp"
+    android:gravity="bottom"
     android:orientation="vertical"
-    android:gravity="bottom">
+    android:padding="16dp">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Username"
-        android:textColor="@color/white"/>
+        android:textColor="@color/white" />
 
 </LinearLayout>

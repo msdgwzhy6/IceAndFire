@@ -3,9 +3,6 @@ package com.southernbox.inf.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-/**
- * Created by Clock on 2016/8/24.
- */
 public class DayNightHelper {
 
     private final static String FILE_NAME = "settings";
@@ -36,11 +33,7 @@ public class DayNightHelper {
      */
     public boolean isNight() {
         String mode = mSharedPreferences.getString(MODE, DayNight.DAY.getName());
-        if (DayNight.NIGHT.getName().equals(mode)) {
-            return true;
-        } else {
-            return false;
-        }
+        return DayNight.NIGHT.getName().equals(mode);
     }
 
     /**
@@ -50,11 +43,7 @@ public class DayNightHelper {
      */
     public boolean isDay() {
         String mode = mSharedPreferences.getString(MODE, DayNight.DAY.getName());
-        if (DayNight.DAY.getName().equals(mode)) {
-            return true;
-        } else {
-            return false;
-        }
+        return DayNight.DAY.getName().equals(mode);
     }
 
     public enum DayNight {

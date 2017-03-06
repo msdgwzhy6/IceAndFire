@@ -7,24 +7,24 @@
             android:id="@+id/nav_person"
             android:checked="true"
             android:icon="@drawable/menu_person"
-            android:title="人物" />
+            android:title="@string/person" />
         <item
             android:id="@+id/nav_house"
             android:icon="@drawable/menu_house"
-            android:title="家族" />
+            android:title="@string/house" />
         <item
             android:id="@+id/nav_history"
             android:icon="@drawable/menu_history"
-            android:title="历史" />
+            android:title="@string/history" />
         <item
             android:id="@+id/nav_castles"
             android:icon="@drawable/menu_castle"
-            android:title="城堡" />
+            android:title="@string/castle" />
         <item
             android:id="@+id/nav_night"
             android:checkable="false"
             android:icon="@drawable/menu_bulb"
-            android:title="夜间模式"
+            android:title="@string/night_mode"
             app:actionLayout="@layout/menu_switch" />
     </group>
 
