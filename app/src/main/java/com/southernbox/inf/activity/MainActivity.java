@@ -3,6 +3,7 @@ package com.southernbox.inf.activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -12,7 +13,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.util.Pair;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -60,13 +64,13 @@ public class MainActivity extends BaseActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initToolBar();
+        initToolbar();
         initDrawerLayout();
         initNavigationView();
         initViewPager("人物", TYPE_PERSON);
     }
 
-    private void initToolBar() {
+    private void initToolbar() {
         mToolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(mToolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -76,15 +80,8 @@ public class MainActivity extends BaseActivity
         mToolbar.post(new Runnable() {
             @Override
             public void run() {
-                //设置Toolbar的图标颜色
-                Drawable navigationIcon = mToolbar.getNavigationIcon();
-                if (navigationIcon != null) {
-                    if (mDayNightHelper.isDay()) {
-                        mToolbar.getNavigationIcon().setAlpha(255);
-                    } else {
-                        mToolbar.getNavigationIcon().setAlpha(128);
-                    }
-                }
+                //设置Toolbar的图标
+                refreshToolbarIcon();
             }
         });
     }
@@ -183,7 +180,7 @@ public class MainActivity extends BaseActivity
     }
 
     /**
-     * 刷新UI界面
+     * 刷新界面UI
      */
     private void refreshUI(boolean isDay) {
         Resources.Theme theme = getTheme();
@@ -203,14 +200,7 @@ public class MainActivity extends BaseActivity
         //更新Toolbar的背景、标题、图标颜色
         mToolbar.setBackgroundResource(colorPrimary.resourceId);
         mToolbar.setTitleTextColor(ContextCompat.getColor(mContext, lightTextColor.resourceId));
-        Drawable navigationIcon = mToolbar.getNavigationIcon();
-        if (navigationIcon != null) {
-            if (isDay) {
-                mToolbar.getNavigationIcon().setAlpha(255);
-            } else {
-                mToolbar.getNavigationIcon().setAlpha(128);
-            }
-        }
+        refreshToolbarIcon();
 
         //更新TabLayout的背景及标识线颜色
         TabLayout mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
@@ -237,7 +227,7 @@ public class MainActivity extends BaseActivity
     }
 
     /**
-     * 刷新 StatusBar
+     * 刷新StatusBar
      */
     private void refreshStatusBar() {
         if (Build.VERSION.SDK_INT >= 21) {
@@ -245,6 +235,29 @@ public class MainActivity extends BaseActivity
             Resources.Theme theme = getTheme();
             theme.resolveAttribute(R.attr.colorPrimaryDark, typedValue, true);
             getWindow().setStatusBarColor(ContextCompat.getColor(mContext, typedValue.resourceId));
+        }
+    }
+
+    /**
+     * 刷新Toolbar图标
+     */
+    private void refreshToolbarIcon() {
+        Drawable navigationIcon = mToolbar.getNavigationIcon();
+        if (navigationIcon != null) {
+            if (mDayNightHelper.isDay()) {
+                navigationIcon.setAlpha(255);
+            } else {
+                navigationIcon.setAlpha(128);
+            }
+        }
+        Menu toolbarMenu = mToolbar.getMenu();
+        Drawable searchIcon = toolbarMenu.getItem(0).getIcon();
+        if (searchIcon != null) {
+            if (mDayNightHelper.isDay()) {
+                searchIcon.setAlpha(255);
+            } else {
+                searchIcon.setAlpha(128);
+            }
         }
     }
 
@@ -269,17 +282,24 @@ public class MainActivity extends BaseActivity
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_main_toolbar, menu);
+        return true;
+    }
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_search) {
+            Pair[] pairs = new Pair[]{new Pair(findViewById(R.id.appbar_layout), "tran_02")};
+            ActivityOptionsCompat options = ActivityOptionsCompat
+                    .makeSceneTransitionAnimation(this, pairs);
+
+            ActivityCompat.startActivity(this, new Intent(this, SearchActivity.class), options.toBundle());
+
+//            startActivity(new Intent(this, SearchActivity.class));
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -330,4 +350,5 @@ public class MainActivity extends BaseActivity
         }
         return true;
     }
+
 }

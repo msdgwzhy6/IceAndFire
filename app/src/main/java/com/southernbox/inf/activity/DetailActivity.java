@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ImageView;
 
@@ -91,6 +92,12 @@ public class DetailActivity extends BaseActivity {
         mWebView = (WebView) findViewById(R.id.web_view);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.addJavascriptInterface(new Js2Java(this), "Android");
+        // 支持多窗口
+        mWebView.getSettings().setSupportMultipleWindows(true);
+        // 开启 DOM storage API 功能
+        mWebView.getSettings().setDomStorageEnabled(true);
+        // 开启 Application Caches 功能
+        mWebView.getSettings().setAppCacheEnabled(true);
 
         mToolbar.post(new Runnable() {
             @Override
@@ -129,6 +136,7 @@ public class DetailActivity extends BaseActivity {
                                 "color:#9F9F9F;}\n\t\t</style>\n\t</head>");
                         htmlData = htmlData.replace("<body>", "<body bgcolor=\"#4F4F4F\">");
                     }
+                    mWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
                     mWebView.loadDataWithBaseURL("file:///android_asset/", htmlData, "text/html", "utf-8", null);
                 }
             }
@@ -136,6 +144,7 @@ public class DetailActivity extends BaseActivity {
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 ToastUtil.show(mContext, "网络连接失败，请重试");
+                mWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
             }
         });
 

@@ -31,7 +31,7 @@
         <item name="darkTextColor">@color/color9F9F9F</item>
         <item name="lightTextColor">@color/color9F9F9F</item>
         <!--AppBarLayout图标颜色 通过透明度改变颜色-->
-        <item name="colorControlNormal">@color/white</item>
+        <item name="colorControlNormal">@android:color/white</item>
     </style>
 
 </resources>
