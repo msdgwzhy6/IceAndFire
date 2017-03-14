@@ -4,12 +4,15 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="action_search">Search</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_search">搜索</string>
+    <string name="action_settings">设置</string>
 
     <string name="person">人物</string>
     <string name="house">家族</string>
     <string name="history">历史</string>
     <string name="castle">城堡</string>
-    <string name="night_mode">夜间模式</string>\
+    <string name="night_mode">夜间模式</string>
+
+    <!--MaterialSearchView-->
+    <string name="search_hint">Search</string>
 </resources>

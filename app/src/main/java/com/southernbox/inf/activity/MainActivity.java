@@ -3,7 +3,6 @@ package com.southernbox.inf.activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -13,10 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.util.Pair;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -25,11 +21,11 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
@@ -38,6 +34,7 @@ import com.southernbox.inf.entity.TabDTO;
 import com.southernbox.inf.pager.MainViewPager;
 import com.southernbox.inf.util.DayNightHelper;
 import com.southernbox.inf.util.ToastUtil;
+import com.southernbox.inf.widget.MaterialSearchView.MaterialSearchView;
 
 import java.util.List;
 
@@ -59,6 +56,8 @@ public class MainActivity extends BaseActivity
     private NavigationView navigationView;
     private SwitchCompat switchCompat;
     private MainViewPager mViewPager;
+
+    private MaterialSearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +81,52 @@ public class MainActivity extends BaseActivity
             public void run() {
                 //设置Toolbar的图标
                 refreshToolbarIcon();
+            }
+        });
+
+        searchView = (MaterialSearchView) findViewById(R.id.search_view);
+        searchView.setVoiceSearch(false);
+        searchView.setCursorDrawable(R.drawable.custom_cursor);
+        searchView.setEllipsize(true);
+        searchView.setHint("搜索");
+        searchView.setSuggestions(getResources().getStringArray(R.array.query_suggestions));
+        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+//                Snackbar.make(findViewById(R.id.drawer_layout), "Query: " + query, Snackbar.LENGTH_LONG)
+//                        .show();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //Do some magic
+                return false;
+            }
+        });
+
+        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+            @Override
+            public void onSearchViewShown() {
+                //Do some magic
+            }
+
+            @Override
+            public void onSearchViewClosed() {
+                //Do some magic
+            }
+        });
+
+        searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                DetailActivity.show(
+//                        mContext,
+//                        "哈哈",
+//                        "",
+//                        ""
+//                );
+                searchView.closeSearch();
             }
         });
     }
@@ -261,13 +306,21 @@ public class MainActivity extends BaseActivity
         }
     }
 
+    private long mExitTime;
+
     @Override
     public void onBackPressed() {
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if (searchView.isSearchOpen()) {
+            searchView.closeSearch();
+        } else if (System.currentTimeMillis() - mExitTime > 2000) {
+            ToastUtil.show(this, "再按一次退出");
+            mExitTime = System.currentTimeMillis();
         } else {
-            super.onBackPressed();
+            ToastUtil.cancel();
+            finish();
         }
     }
 
@@ -284,22 +337,19 @@ public class MainActivity extends BaseActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_main_toolbar, menu);
+
+        MenuItem item = menu.findItem(R.id.action_search);
+        searchView.setMenuItem(item);
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_search) {
-            Pair[] pairs = new Pair[]{new Pair(findViewById(R.id.appbar_layout), "tran_02")};
-            ActivityOptionsCompat options = ActivityOptionsCompat
-                    .makeSceneTransitionAnimation(this, pairs);
-
-            ActivityCompat.startActivity(this, new Intent(this, SearchActivity.class), options.toBundle());
-
-//            startActivity(new Intent(this, SearchActivity.class));
-            return true;
-        }
+//        int id = item.getItemId();
+//        if (id == R.id.action_search) {
+//            return true;
+//        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -331,22 +381,6 @@ public class MainActivity extends BaseActivity
                     switchCompat.setChecked(true);
                 }
                 break;
-        }
-        return true;
-    }
-
-    private long mExitTime;
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (System.currentTimeMillis() - mExitTime > 2000) {
-                ToastUtil.show(this, "再按一次退出");
-                mExitTime = System.currentTimeMillis();
-            } else {
-                ToastUtil.cancel();
-                finish();
-            }
         }
         return true;
     }
