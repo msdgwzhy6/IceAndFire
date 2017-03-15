@@ -56,7 +56,16 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
                     List<String> searchData = new ArrayList<>();
 
                     for (String string : suggestions) {
-                        if (string.toLowerCase().startsWith(constraint.toString().toLowerCase())) {
+//                        if (string.toLowerCase().startsWith(constraint.toString().toLowerCase())) {
+//                            searchData.add(string);
+//                        }
+
+                        //修改源码，下拉列表展示包含关键字的所有结果
+                        String suggestion = string.toLowerCase().trim();
+                        String keyword = constraint.toString().toLowerCase().replace(" ", "").trim();
+                        if (!TextUtils.isEmpty(keyword) &&
+                                (suggestion.contains(keyword) ||
+                                        suggestion.replace("·", "").contains(keyword))) {
                             searchData.add(string);
                         }
                     }

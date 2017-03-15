@@ -25,11 +25,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.southernbox.inf.R;
+import com.southernbox.inf.entity.ContentDTO;
 import com.southernbox.inf.entity.TabDTO;
 import com.southernbox.inf.pager.MainViewPager;
 import com.southernbox.inf.util.DayNightHelper;
@@ -85,48 +85,32 @@ public class MainActivity extends BaseActivity
         });
 
         searchView = (MaterialSearchView) findViewById(R.id.search_view);
-        searchView.setVoiceSearch(false);
-//        searchView.setCursorDrawable(R.drawable.custom_cursor);
         searchView.setEllipsize(true);
         searchView.setHint("搜索");
-        searchView.setSuggestions(getResources().getStringArray(R.array.query_suggestions));
-        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-//                Snackbar.make(findViewById(R.id.drawer_layout), "Query: " + query, Snackbar.LENGTH_LONG)
-//                        .show();
-                return false;
-            }
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                //Do some magic
-                return false;
-            }
-        });
+        List<ContentDTO> contentList = mRealm.where(ContentDTO.class).findAll();
+        String[] contentNames = new String[contentList.size()];
+        for (int i = 0; i < contentList.size(); i++) {
+            contentNames[i] = contentList.get(i).getName();
+        }
+//        searchView.setSuggestions(getResources().getStringArray(R.array.query_suggestions));
+        searchView.setSuggestions(contentNames);
 
-        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+        searchView.setOnSuggestionClickListener(new MaterialSearchView.OnSuggestionClickListener() {
             @Override
-            public void onSearchViewShown() {
-                //Do some magic
-            }
-
-            @Override
-            public void onSearchViewClosed() {
-                //Do some magic
-            }
-        });
-
-        searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                DetailActivity.show(
-//                        mContext,
-//                        "哈哈",
-//                        "",
-//                        ""
-//                );
+            public void onSuggestionClick(String name) {
                 searchView.closeSearch();
+                ContentDTO content = mRealm.where(ContentDTO.class)
+                        .equalTo("name", name)
+                        .findFirst();
+                if (content != null) {
+                    DetailActivity.show(
+                            mContext,
+                            content.getName(),
+                            content.getImg(),
+                            content.getHtml()
+                    );
+                }
             }
         });
     }
@@ -337,10 +321,9 @@ public class MainActivity extends BaseActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_main_toolbar, menu);
-
+        //设置搜索框
         MenuItem item = menu.findItem(R.id.action_search);
         searchView.setMenuItem(item);
-
         return true;
     }
 
@@ -384,5 +367,4 @@ public class MainActivity extends BaseActivity
         }
         return true;
     }
-
 }

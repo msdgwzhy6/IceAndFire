@@ -29,7 +29,6 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -67,7 +66,7 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
     private OnQueryTextListener mOnQueryChangeListener;
     private SearchViewListener mSearchViewListener;
 
-    private ListAdapter mAdapter;
+    private SearchAdapter mAdapter;
 
     private SavedState mSavedState;
     private boolean submit = false;
@@ -78,6 +77,15 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
     private Drawable suggestionIcon;
 
     private Context mContext;
+
+    private OnSuggestionClickListener mOnSuggestionClickListener;
+
+    /**
+     * 修改源码，添加展开列表点击监听器
+     */
+    public interface OnSuggestionClickListener {
+        void onSuggestionClick(String name);
+    }
 
     public MaterialSearchView(Context context) {
         this(context, null);
@@ -214,7 +222,7 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
 
     private void startFilter(CharSequence s) {
         if (mAdapter != null && mAdapter instanceof Filterable) {
-            ((Filterable) mAdapter).getFilter().filter(s, MaterialSearchView.this);
+            mAdapter.getFilter().filter(s, MaterialSearchView.this);
         }
     }
 
@@ -371,7 +379,7 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
     //Public Methods
 
     /**
-     * Call this method to show suggestions list. This shows up when adapter is set. Call {@link #setAdapter(ListAdapter)} before calling this.
+     * Call this method to show suggestions list. This shows up when adapter is set. Call {@link #setAdapter(SearchAdapter)} before calling this.
      */
     public void showSuggestions() {
         if (mAdapter != null && mAdapter.getCount() > 0 && mSuggestionsListView.getVisibility() == GONE) {
@@ -398,11 +406,20 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
     }
 
     /**
+     * 修改源码，添加展开列表点击监听器
+     *
+     * @param listener 展开列表点击监听器
+     */
+    public void setOnSuggestionClickListener(OnSuggestionClickListener listener) {
+        mOnSuggestionClickListener = listener;
+    }
+
+    /**
      * Set Adapter for suggestions list. Should implement Filterable.
      *
      * @param adapter
      */
-    public void setAdapter(ListAdapter adapter) {
+    public void setAdapter(SearchAdapter adapter) {
         mAdapter = adapter;
         mSuggestionsListView.setAdapter(adapter);
         startFilter(mSearchSrcTextView.getText());
@@ -422,7 +439,11 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
             setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    setQuery((String) adapter.getItem(position), submit);
+                    if (mOnSuggestionClickListener != null) {
+                        mOnSuggestionClickListener.onSuggestionClick((String) adapter.getItem(position));
+                    } else {
+                        setQuery((String) adapter.getItem(position), submit);
+                    }
                 }
             });
         } else {
