@@ -86,7 +86,7 @@ public class MainActivity extends BaseActivity
 
         searchView = (MaterialSearchView) findViewById(R.id.search_view);
         searchView.setVoiceSearch(false);
-        searchView.setCursorDrawable(R.drawable.custom_cursor);
+//        searchView.setCursorDrawable(R.drawable.custom_cursor);
         searchView.setEllipsize(true);
         searchView.setHint("搜索");
         searchView.setSuggestions(getResources().getStringArray(R.array.query_suggestions));

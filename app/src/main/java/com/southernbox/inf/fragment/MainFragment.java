@@ -128,7 +128,8 @@ public class MainFragment extends Fragment {
         Call<List<ContentDTO>> call = requestServes.getContent();
         call.enqueue(new Callback<List<ContentDTO>>() {
             @Override
-            public void onResponse(Call<List<ContentDTO>> call, retrofit2.Response<List<ContentDTO>> response) {
+            public void onResponse(Call<List<ContentDTO>> call,
+                                   retrofit2.Response<List<ContentDTO>> response) {
                 mSwipeRefreshLayout.setRefreshing(false);
                 List<ContentDTO> list = response.body();
                 if (list != null) {
@@ -152,6 +153,9 @@ public class MainFragment extends Fragment {
      * 展示数据
      */
     private void showData() {
+        if (isRemoving()) {
+            return;
+        }
         //从本地数据库获取
         contentList.clear();
         final List<ContentDTO> cacheList = mRealm
