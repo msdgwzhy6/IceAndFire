@@ -5,6 +5,8 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
+import android.view.MotionEvent;
+import android.view.View;
 
 import com.southernbox.inf.R;
 import com.southernbox.inf.activity.MainActivity;
@@ -63,6 +65,24 @@ public class MainViewPager {
         mToolbar = (Toolbar) mainActivity.findViewById(R.id.main_toolbar);
         mTabLayout = (TabLayout) mainActivity.findViewById(R.id.tab_layout);
         mViewPager = (ViewPager) mainActivity.findViewById(R.id.view_pager);
+        //滑动时禁用SwipeRefreshLayout
+        mViewPager.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                int action = motionEvent.getAction();
+                switch (action) {
+                    case MotionEvent.ACTION_DOWN:// 经测试，ViewPager的DOWN事件不会被分发下来
+                    case MotionEvent.ACTION_MOVE:
+                        mSwipeRefreshLayout.setEnabled(false);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                    case MotionEvent.ACTION_CANCEL:
+                        mSwipeRefreshLayout.setEnabled(true);
+                        break;
+                }
+                return false;
+            }
+        });
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) mainActivity.findViewById(R.id.switch_refresh_layout);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimaryDark);
