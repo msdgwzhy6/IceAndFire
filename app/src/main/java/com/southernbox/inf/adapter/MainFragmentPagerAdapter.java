@@ -2,7 +2,6 @@ package com.southernbox.inf.adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.southernbox.inf.fragment.MainFragment;
@@ -41,5 +40,4 @@ public class MainFragmentPagerAdapter extends FragmentStatePagerAdapter {
     public CharSequence getPageTitle(int position) {
         return titles[position];
     }
-
 }

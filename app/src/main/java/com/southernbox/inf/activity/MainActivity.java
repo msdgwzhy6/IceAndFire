@@ -329,7 +329,7 @@ public class MainActivity extends BaseActivity
                 .equalTo("firstType", firstType)
                 .findAll();
         if (tabList != null && tabList.size() > 0) {
-            mViewPager = new MainViewPager(mContext, title, tabList);
+            mViewPager = new MainViewPager(this, title, tabList);
             mViewPager.initData();
         }
     }
