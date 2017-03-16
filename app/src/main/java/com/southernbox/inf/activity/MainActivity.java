@@ -97,19 +97,23 @@ public class MainActivity extends BaseActivity
 
         searchView.setOnSuggestionClickListener(new MaterialSearchView.OnSuggestionClickListener() {
             @Override
-            public void onSuggestionClick(String name) {
-                searchView.closeSearch();
-                ContentDTO content = mRealm.where(ContentDTO.class)
-                        .equalTo("name", name)
-                        .findFirst();
-                if (content != null) {
-                    DetailActivity.show(
-                            mContext,
-                            content.getName(),
-                            content.getImg(),
-                            content.getHtml()
-                    );
-                }
+            public void onSuggestionClick(final String name) {
+                searchView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        searchView.closeSearch();
+                        ContentDTO content = mRealm.where(ContentDTO.class)
+                                .equalTo("name", name)
+                                .findFirst();
+                        if (content != null) {
+                            DetailActivity.show(
+                                    mContext,
+                                    content.getName(),
+                                    content.getImg(),
+                                    content.getHtml());
+                        }
+                    }
+                }, 200);
             }
         });
     }
