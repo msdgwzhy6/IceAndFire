@@ -66,7 +66,7 @@ public class MainActivity extends BaseActivity
         initToolbar();
         initDrawerLayout();
         initNavigationView();
-        initViewPager("人物", TYPE_PERSON);
+        initViewPager(TYPE_PERSON);
     }
 
     private void initToolbar() {
@@ -79,6 +79,7 @@ public class MainActivity extends BaseActivity
         mToolbar.post(new Runnable() {
             @Override
             public void run() {
+                mToolbar.setTitle(getResources().getString(R.string.person));
                 //设置Toolbar的图标
                 refreshToolbarIcon();
             }
@@ -311,12 +312,12 @@ public class MainActivity extends BaseActivity
         }
     }
 
-    private void initViewPager(String title, String firstType) {
+    private void initViewPager(String firstType) {
         List<TabDTO> tabList = mRealm.where(TabDTO.class)
                 .equalTo("firstType", firstType)
                 .findAll();
         if (tabList != null && tabList.size() > 0) {
-            mViewPager = new MainViewPager(this, title, tabList);
+            mViewPager = new MainViewPager(this, tabList);
             mViewPager.initData();
         }
     }
@@ -344,19 +345,23 @@ public class MainActivity extends BaseActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_person:
-                initViewPager("人物", TYPE_PERSON);
+                initViewPager(TYPE_PERSON);
+                mToolbar.setTitle(getResources().getString(R.string.person));
                 drawer.closeDrawer(GravityCompat.START);
                 break;
             case R.id.nav_house:
-                initViewPager("家族", TYPE_HOUSE);
+                initViewPager(TYPE_HOUSE);
+                mToolbar.setTitle(getResources().getString(R.string.house));
                 drawer.closeDrawer(GravityCompat.START);
                 break;
             case R.id.nav_history:
-                initViewPager("历史", TYPE_HISTORY);
+                initViewPager(TYPE_HISTORY);
+                mToolbar.setTitle(getResources().getString(R.string.history));
                 drawer.closeDrawer(GravityCompat.START);
                 break;
             case R.id.nav_castles:
-                initViewPager("城堡", TYPE_CASTLE);
+                initViewPager(TYPE_CASTLE);
+                mToolbar.setTitle(getResources().getString(R.string.castle));
                 drawer.closeDrawer(GravityCompat.START);
                 break;
             case R.id.nav_night:

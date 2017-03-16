@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -39,19 +38,16 @@ public class MainViewPager {
     private MainActivity mainActivity;
     private Context mContext;
 
-    private Toolbar mToolbar;
     private TabLayout mTabLayout;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ViewPager mViewPager;
 
     private ArrayList<MainFragment> fragments;
-    private String title;
     private String[] tabTitles;
     private List<TabDTO> tabList;
     private Realm mRealm;
 
-    public MainViewPager(MainActivity mainActivity, String title, List<TabDTO> tabList) {
-        this.title = title;
+    public MainViewPager(MainActivity mainActivity, List<TabDTO> tabList) {
         this.tabList = tabList;
         this.mainActivity = mainActivity;
         this.mContext = mainActivity;
@@ -62,7 +58,6 @@ public class MainViewPager {
     }
 
     private void initView() {
-        mToolbar = (Toolbar) mainActivity.findViewById(R.id.main_toolbar);
         mTabLayout = (TabLayout) mainActivity.findViewById(R.id.tab_layout);
         mViewPager = (ViewPager) mainActivity.findViewById(R.id.view_pager);
         //滑动时禁用SwipeRefreshLayout
@@ -142,7 +137,6 @@ public class MainViewPager {
 
     public void initData() {
         initFragment();
-        mToolbar.setTitle(title);
         mViewPager.setAdapter(new MainFragmentPagerAdapter(
                 mainActivity.getSupportFragmentManager(),
                 fragments, tabTitles));
