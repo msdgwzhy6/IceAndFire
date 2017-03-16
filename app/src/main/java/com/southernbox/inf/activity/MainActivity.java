@@ -93,7 +93,6 @@ public class MainActivity extends BaseActivity
         for (int i = 0; i < contentList.size(); i++) {
             contentNames[i] = contentList.get(i).getName();
         }
-//        searchView.setSuggestions(getResources().getStringArray(R.array.query_suggestions));
         searchView.setSuggestions(contentNames);
 
         searchView.setOnSuggestionClickListener(new MaterialSearchView.OnSuggestionClickListener() {
