@@ -132,8 +132,8 @@ public class DetailActivity extends BaseActivity {
                 if (response.body() != null) {
                     String htmlData = response.body();
                     if (mDayNightHelper.isNight()) {
-                        htmlData = htmlData.replace("}\n\t\t</style>\n\t</head>",
-                                "color:#9F9F9F;}\n\t\t</style>\n\t</head>");
+                        htmlData = htmlData.replace("p {",
+                                "p {color:#9F9F9F;");
                         htmlData = htmlData.replace("<body>", "<body bgcolor=\"#4F4F4F\">");
                     }
                     mWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
