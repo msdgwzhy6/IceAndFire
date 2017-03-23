@@ -4,6 +4,10 @@ import android.content.Context;
 import android.webkit.JavascriptInterface;
 
 import com.southernbox.inf.activity.DetailActivity;
+import com.southernbox.inf.entity.ContentDTO;
+
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 /**
  * Created by SouthernBox on 2016/4/1.
@@ -19,7 +23,20 @@ public class Js2Java {
     }
 
     @JavascriptInterface
-    public void goDetail(String name, String img, String htmlUrl) {
-        DetailActivity.show(mContext, name, img, htmlUrl);
+    public void goDetail(String id) {
+        RealmConfiguration realmConfig = new RealmConfiguration.Builder().build();
+        Realm mRealm = Realm.getInstance(realmConfig);
+
+        ContentDTO content = mRealm.where(ContentDTO.class)
+                .equalTo("id", id)
+                .findFirst();
+
+        if (content != null) {
+            DetailActivity.show(
+                    mContext,
+                    content.getName(),
+                    content.getImg(),
+                    content.getHtml());
+        }
     }
 }
