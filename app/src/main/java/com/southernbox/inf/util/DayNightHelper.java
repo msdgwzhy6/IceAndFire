@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 
 public class DayNightHelper {
 
-    private final static String FILE_NAME = "settings";
+    private final static String FILE_NAME = "ice_and_fire";
     private final static String MODE = "day_night_mode";
 
     private SharedPreferences mSharedPreferences;
@@ -17,19 +17,17 @@ public class DayNightHelper {
     /**
      * 保存模式设置
      *
-     * @param mode
-     * @return
+     * @param mode 模式
      */
-    public boolean setMode(DayNight mode) {
+    public void setMode(DayNight mode) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putString(MODE, mode.getName());
-        return editor.commit();
+        editor.putString(MODE, mode.getName()).apply();
     }
 
     /**
      * 夜间模式
      *
-     * @return
+     * @return 是否夜间模式
      */
     public boolean isNight() {
         String mode = mSharedPreferences.getString(MODE, DayNight.DAY.getName());
@@ -39,7 +37,7 @@ public class DayNightHelper {
     /**
      * 日间模式
      *
-     * @return
+     * @return 是否白天模式
      */
     public boolean isDay() {
         String mode = mSharedPreferences.getString(MODE, DayNight.DAY.getName());
@@ -48,23 +46,13 @@ public class DayNightHelper {
 
     public enum DayNight {
 
-        DAY("DAY", 0),
-        NIGHT("NIGHT", 1);
+        DAY("DAY"),
+        NIGHT("NIGHT");
 
         private String name;
-        private int code;
 
-        private DayNight(String name, int code) {
+        DayNight(String name) {
             this.name = name;
-            this.code = code;
-        }
-
-        public int getCode() {
-            return code;
-        }
-
-        public void setCode(int code) {
-            this.code = code;
         }
 
         public String getName() {
