@@ -4,23 +4,21 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.southernbox.inf.R;
+import com.southernbox.inf.databinding.ActivityDetailBinding;
 import com.southernbox.inf.js.Js2Java;
 import com.southernbox.inf.util.ServerAPI;
 import com.southernbox.inf.util.ToastUtil;
@@ -36,14 +34,14 @@ import retrofit2.Callback;
 @SuppressLint("SetJavaScriptEnabled")
 public class DetailActivity extends BaseActivity {
 
-    private Toolbar mToolbar;
-    private ImageView mImageView;
-    private WebView mWebView;
     private String title;
     private String img;
     private String html;
 
-    public static void show(Context context, ActivityOptionsCompat options, String title, String img, String html) {
+    private ActivityDetailBinding binding;
+
+    public static void show(Context context, ActivityOptionsCompat options,
+                            String title, String img, String html) {
         Intent intent = new Intent(context, DetailActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("title", title);
@@ -66,7 +64,7 @@ public class DetailActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
         Bundle bundle = getIntent().getExtras();
         title = bundle.getString("title");
         img = bundle.getString("img");
@@ -79,36 +77,31 @@ public class DetailActivity extends BaseActivity {
         Resources.Theme theme = mContext.getTheme();
         TypedValue lightTextColor = new TypedValue();
         theme.resolveAttribute(R.attr.lightTextColor, lightTextColor, true);
-        CollapsingToolbarLayout mCollapsingToolbarLayout =
-                (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        mCollapsingToolbarLayout
+        binding.collapsingToolbar
                 .setCollapsedTitleTextColor(ContextCompat
                         .getColor(mContext, lightTextColor.resourceId));
-        mCollapsingToolbarLayout
+        binding.collapsingToolbar
                 .setExpandedTitleTextColor(ContextCompat
                         .getColorStateList(mContext, lightTextColor.resourceId));
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mImageView = (ImageView) findViewById(R.id.image_view);
-        mWebView = (WebView) findViewById(R.id.web_view);
-        mWebView.getSettings().setJavaScriptEnabled(true);
-        mWebView.addJavascriptInterface(new Js2Java(this), "Android");
+        binding.webView.getSettings().setJavaScriptEnabled(true);
+        binding.webView.addJavascriptInterface(new Js2Java(this), "Android");
         // 支持多窗口
-        mWebView.getSettings().setSupportMultipleWindows(true);
+        binding.webView.getSettings().setSupportMultipleWindows(true);
         // 开启 DOM storage API 功能
-        mWebView.getSettings().setDomStorageEnabled(true);
+        binding.webView.getSettings().setDomStorageEnabled(true);
         // 开启 Application Caches 功能
-        mWebView.getSettings().setAppCacheEnabled(true);
+        binding.webView.getSettings().setAppCacheEnabled(true);
 
-        mToolbar.post(new Runnable() {
+        binding.toolbar.post(new Runnable() {
             @Override
             public void run() {
                 //设置Toolbar的图标颜色
-                Drawable navigationIcon = mToolbar.getNavigationIcon();
+                Drawable navigationIcon = binding.toolbar.getNavigationIcon();
                 if (navigationIcon != null) {
                     if (mDayNightHelper.isDay()) {
-                        mToolbar.getNavigationIcon().setAlpha(255);
+                        binding.toolbar.getNavigationIcon().setAlpha(255);
                     } else {
-                        mToolbar.getNavigationIcon().setAlpha(128);
+                        binding.toolbar.getNavigationIcon().setAlpha(128);
                     }
                 }
             }
@@ -116,14 +109,14 @@ public class DetailActivity extends BaseActivity {
     }
 
     private void initData() {
-        mToolbar.setTitle(title);
+        binding.toolbar.setTitle(title);
 
         Glide
                 .with(this)
                 .load(ServerAPI.BASE_URL + img)
                 .override(480, 270)
                 .crossFade()
-                .into(mImageView);
+                .into(binding.imageView);
 
         Call<String> call = requestServes.get(html);
         call.enqueue(new Callback<String>() {
@@ -136,27 +129,28 @@ public class DetailActivity extends BaseActivity {
                                 "p {color:#9F9F9F;");
                         htmlData = htmlData.replace("<body>", "<body bgcolor=\"#4F4F4F\">");
                     }
-                    mWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
-                    mWebView.loadDataWithBaseURL("file:///android_asset/", htmlData, "text/html", "utf-8", null);
+                    binding.webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+                    binding.webView.loadDataWithBaseURL(
+                            "file:///android_asset/", htmlData, "text/html", "utf-8", null);
                 }
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 ToastUtil.show(mContext, "网络连接失败，请重试");
-                mWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+                binding.webView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
             }
         });
 
-        setSupportActionBar(mToolbar);
+        setSupportActionBar(binding.toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        binding.toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mWebView.setVisibility(View.GONE);
+                binding.webView.setVisibility(View.GONE);
                 onBackPressed();
             }
         });
@@ -165,7 +159,7 @@ public class DetailActivity extends BaseActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            mWebView.setVisibility(View.GONE);
+            binding.webView.setVisibility(View.GONE);
             onBackPressed();
         }
         return true;

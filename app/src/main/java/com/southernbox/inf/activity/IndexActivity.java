@@ -1,15 +1,16 @@
 package com.southernbox.inf.activity;
 
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
 
 import com.southernbox.inf.R;
+import com.southernbox.inf.databinding.ActivityIndexBinding;
 import com.southernbox.inf.entity.ContentDTO;
 import com.southernbox.inf.entity.TabDTO;
 import com.southernbox.inf.util.ToastUtil;
@@ -26,15 +27,16 @@ import retrofit2.Callback;
 
 public class IndexActivity extends BaseActivity {
 
-    private ImageView ivIndex;
     private boolean animationComplete;
     private boolean loadTabComplete;
     private boolean loadContentComplete;
 
+    private ActivityIndexBinding binding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_welcome);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_index);
         showAnimation();
     }
 
@@ -42,7 +44,6 @@ public class IndexActivity extends BaseActivity {
      * 显示启动页动画
      */
     private void showAnimation() {
-        ivIndex = (ImageView) findViewById(R.id.iv_index);
         Animation animation = AnimationUtils.loadAnimation(this,
                 R.anim.anim_valar_morghulis);
         animation.setAnimationListener(new AnimationListener() {
@@ -66,7 +67,7 @@ public class IndexActivity extends BaseActivity {
 
         });
         SystemClock.sleep(200);
-        ivIndex.startAnimation(animation);
+        binding.ivIndex.startAnimation(animation);
         loadTabData();
         loadContentData();
     }
@@ -78,7 +79,8 @@ public class IndexActivity extends BaseActivity {
         Call<List<TabDTO>> call = requestServes.getTab();
         call.enqueue(new Callback<List<TabDTO>>() {
             @Override
-            public void onResponse(Call<List<TabDTO>> call, retrofit2.Response<List<TabDTO>> response) {
+            public void onResponse(Call<List<TabDTO>> call,
+                                   retrofit2.Response<List<TabDTO>> response) {
                 List<TabDTO> tabList = response.body();
                 if (tabList != null) {
                     //缓存到数据库
@@ -112,7 +114,8 @@ public class IndexActivity extends BaseActivity {
         Call<List<ContentDTO>> call = requestServes.getContent();
         call.enqueue(new Callback<List<ContentDTO>>() {
             @Override
-            public void onResponse(Call<List<ContentDTO>> call, retrofit2.Response<List<ContentDTO>> response) {
+            public void onResponse(Call<List<ContentDTO>> call,
+                                   retrofit2.Response<List<ContentDTO>> response) {
                 List<ContentDTO> contentList = response.body();
                 if (contentList != null) {
                     //缓存到数据库
@@ -149,12 +152,12 @@ public class IndexActivity extends BaseActivity {
 
     private void netError() {
         ToastUtil.show(mContext, "网络连接失败，请点击重试");
-        ivIndex.setOnClickListener(new View.OnClickListener() {
+        binding.ivIndex.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 loadTabData();
                 loadContentData();
-                ivIndex.setClickable(false);
+                binding.ivIndex.setClickable(false);
             }
         });
     }

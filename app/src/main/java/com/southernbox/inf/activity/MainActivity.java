@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.res.Resources;
+import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -11,15 +12,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SwitchCompat;
-import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,6 +27,7 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.southernbox.inf.R;
+import com.southernbox.inf.databinding.ActivityMainBinding;
 import com.southernbox.inf.entity.ContentDTO;
 import com.southernbox.inf.entity.TabDTO;
 import com.southernbox.inf.pager.MainViewPager;
@@ -51,58 +50,58 @@ public class MainActivity extends BaseActivity
     private final static String TYPE_HISTORY = "history";
     private final static String TYPE_CASTLE = "castle";
 
-    private Toolbar mToolbar;
-    private DrawerLayout drawer;
-    private NavigationView navigationView;
     private SwitchCompat switchCompat;
     private MainViewPager mViewPager;
 
-    private MaterialSearchView searchView;
+    private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         initToolbar();
         initDrawerLayout();
         initNavigationView();
         initViewPager(TYPE_PERSON);
     }
 
+    /**
+     * 初始化Toolbar
+     */
     private void initToolbar() {
-        mToolbar = (Toolbar) findViewById(R.id.main_toolbar);
-        setSupportActionBar(mToolbar);
+        setSupportActionBar(binding.appBar.mainToolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        mToolbar.post(new Runnable() {
+
+        binding.appBar.mainToolbar.post(new Runnable() {
             @Override
             public void run() {
-                mToolbar.setTitle(getResources().getString(R.string.person));
-                //设置Toolbar的图标
+                //设置Toolbar的标题及图标颜色
+                binding.appBar.mainToolbar.setTitle(getResources().getString(R.string.person));
                 refreshToolbarIcon();
             }
         });
 
-        searchView = (MaterialSearchView) findViewById(R.id.search_view);
-        searchView.setEllipsize(true);
-        searchView.setHint("搜索");
-
+        //设置搜索控件
+        binding.searchView.setEllipsize(true);
+        binding.searchView.setHint("搜索");
+        //设置搜索结果提示
         List<ContentDTO> contentList = mRealm.where(ContentDTO.class).findAll();
         String[] contentNames = new String[contentList.size()];
         for (int i = 0; i < contentList.size(); i++) {
             contentNames[i] = contentList.get(i).getName();
         }
-        searchView.setSuggestions(contentNames);
-
-        searchView.setOnSuggestionClickListener(new MaterialSearchView.OnSuggestionClickListener() {
+        binding.searchView.setSuggestions(contentNames);
+        //监听搜索结果点击事件
+        binding.searchView.setOnSuggestionClickListener(new MaterialSearchView.OnSuggestionClickListener() {
             @Override
             public void onSuggestionClick(final String name) {
-                searchView.postDelayed(new Runnable() {
+                binding.searchView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        searchView.closeSearch();
+                        binding.searchView.closeSearch();
                         ContentDTO content = mRealm.where(ContentDTO.class)
                                 .equalTo("name", name)
                                 .findFirst();
@@ -119,36 +118,44 @@ public class MainActivity extends BaseActivity
         });
     }
 
+    /**
+     * 初始化DrawerLayout
+     */
     private void initDrawerLayout() {
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
+                this,
+                binding.drawerLayout,
+                binding.appBar.mainToolbar,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
+        binding.drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
     }
 
+    /**
+     * 初始化侧边菜单
+     */
     private void initNavigationView() {
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        binding.navigationView.setNavigationItemSelectedListener(this);
 
-        View navigationHeader = navigationView.getHeaderView(0);
+        View navigationHeader = binding.navigationView.getHeaderView(0);
         if (mDayNightHelper.isDay()) {
             navigationHeader.setBackgroundResource(R.drawable.side_nav_bar_day);
         } else {
             navigationHeader.setBackgroundResource(R.drawable.side_nav_bar_night);
         }
 
-        Menu menu = navigationView.getMenu();
+        Menu menu = binding.navigationView.getMenu();
         MenuItem nightItem = menu.findItem(R.id.nav_night);
         View nightView = MenuItemCompat.getActionView(nightItem);
         switchCompat = (SwitchCompat) nightView.findViewById(R.id.switch_compat);
-
+        //设置夜间模式开关
         if (mDayNightHelper.isDay()) {
             switchCompat.setChecked(false);
         } else {
             switchCompat.setChecked(true);
         }
-
+        //监听夜间模式点击事件
         switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -175,7 +182,8 @@ public class MainActivity extends BaseActivity
         if (decorView instanceof ViewGroup && cacheBitmap != null) {
             final View view = new View(this);
             view.setBackground(new BitmapDrawable(getResources(), cacheBitmap));
-            ViewGroup.LayoutParams layoutParam = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams layoutParam = new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT);
             ((ViewGroup) decorView).addView(view, layoutParam);
             ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(view, "alpha", 1f, 0f);
@@ -231,16 +239,17 @@ public class MainActivity extends BaseActivity
         theme.resolveAttribute(R.attr.lightTextColor, lightTextColor, true);
 
         //更新Toolbar的背景、标题、图标颜色
-        mToolbar.setBackgroundResource(colorPrimary.resourceId);
-        mToolbar.setTitleTextColor(ContextCompat.getColor(mContext, lightTextColor.resourceId));
+        binding.appBar.mainToolbar.setBackgroundResource(colorPrimary.resourceId);
+        binding.appBar.mainToolbar.setTitleTextColor(
+                ContextCompat.getColor(mContext, lightTextColor.resourceId));
         refreshToolbarIcon();
 
         //更新TabLayout的背景及标识线颜色
-        TabLayout mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        mTabLayout.setBackgroundResource(colorPrimary.resourceId);
-        mTabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(mContext, colorAccent.resourceId));
+        binding.appBar.tabLayout.setBackgroundResource(colorPrimary.resourceId);
+        binding.appBar.tabLayout.setSelectedTabIndicatorColor(
+                ContextCompat.getColor(mContext, colorAccent.resourceId));
         //更新侧滑菜单标题栏背景及字体颜色
-        View navigationHeader = navigationView.getHeaderView(0);
+        View navigationHeader = binding.navigationView.getHeaderView(0);
         if (isDay) {
             navigationHeader.setBackgroundResource(R.drawable.side_nav_bar_day);
         } else {
@@ -249,10 +258,12 @@ public class MainActivity extends BaseActivity
         TextView tvHeader = (TextView) navigationHeader.findViewById(R.id.textView);
         tvHeader.setTextColor(ContextCompat.getColor(mContext, lightTextColor.resourceId));
         //更新侧滑菜单背景
-        navigationView.setBackgroundResource(colorBackground.resourceId);
+        binding.navigationView.setBackgroundResource(colorBackground.resourceId);
         //更新侧滑菜单字体颜色
-        navigationView.setItemTextColor(ContextCompat.getColorStateList(mContext, darkTextColor.resourceId));
-        navigationView.setItemIconTintList(ContextCompat.getColorStateList(mContext, darkTextColor.resourceId));
+        binding.navigationView.setItemTextColor(
+                ContextCompat.getColorStateList(mContext, darkTextColor.resourceId));
+        binding.navigationView.setItemIconTintList(
+                ContextCompat.getColorStateList(mContext, darkTextColor.resourceId));
         //更新ViewPagerUI
         mViewPager.refreshUI();
 
@@ -267,7 +278,8 @@ public class MainActivity extends BaseActivity
             TypedValue typedValue = new TypedValue();
             Resources.Theme theme = getTheme();
             theme.resolveAttribute(R.attr.colorPrimaryDark, typedValue, true);
-            getWindow().setStatusBarColor(ContextCompat.getColor(mContext, typedValue.resourceId));
+            getWindow().setStatusBarColor(
+                    ContextCompat.getColor(mContext, typedValue.resourceId));
         }
     }
 
@@ -275,7 +287,7 @@ public class MainActivity extends BaseActivity
      * 刷新Toolbar图标
      */
     private void refreshToolbarIcon() {
-        Drawable navigationIcon = mToolbar.getNavigationIcon();
+        Drawable navigationIcon = binding.appBar.mainToolbar.getNavigationIcon();
         if (navigationIcon != null) {
             if (mDayNightHelper.isDay()) {
                 navigationIcon.setAlpha(255);
@@ -283,7 +295,7 @@ public class MainActivity extends BaseActivity
                 navigationIcon.setAlpha(128);
             }
         }
-        Menu toolbarMenu = mToolbar.getMenu();
+        Menu toolbarMenu = binding.appBar.mainToolbar.getMenu();
         Drawable searchIcon = toolbarMenu.getItem(0).getIcon();
         if (searchIcon != null) {
             if (mDayNightHelper.isDay()) {
@@ -298,11 +310,10 @@ public class MainActivity extends BaseActivity
 
     @Override
     public void onBackPressed() {
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else if (searchView.isSearchOpen()) {
-            searchView.closeSearch();
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.START);
+        } else if (binding.searchView.isSearchOpen()) {
+            binding.searchView.closeSearch();
         } else if (System.currentTimeMillis() - mExitTime > 2000) {
             ToastUtil.show(this, "再按一次退出");
             mExitTime = System.currentTimeMillis();
@@ -327,16 +338,12 @@ public class MainActivity extends BaseActivity
         getMenuInflater().inflate(R.menu.activity_main_toolbar, menu);
         //设置搜索框
         MenuItem item = menu.findItem(R.id.action_search);
-        searchView.setMenuItem(item);
+        binding.searchView.setMenuItem(item);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-//        int id = item.getItemId();
-//        if (id == R.id.action_search) {
-//            return true;
-//        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -346,23 +353,23 @@ public class MainActivity extends BaseActivity
         switch (item.getItemId()) {
             case R.id.nav_person:
                 initViewPager(TYPE_PERSON);
-                mToolbar.setTitle(getResources().getString(R.string.person));
-                drawer.closeDrawer(GravityCompat.START);
+                binding.appBar.mainToolbar.setTitle(getResources().getString(R.string.person));
+                binding.drawerLayout.closeDrawer(GravityCompat.START);
                 break;
             case R.id.nav_house:
                 initViewPager(TYPE_HOUSE);
-                mToolbar.setTitle(getResources().getString(R.string.house));
-                drawer.closeDrawer(GravityCompat.START);
+                binding.appBar.mainToolbar.setTitle(getResources().getString(R.string.house));
+                binding.drawerLayout.closeDrawer(GravityCompat.START);
                 break;
             case R.id.nav_history:
                 initViewPager(TYPE_HISTORY);
-                mToolbar.setTitle(getResources().getString(R.string.history));
-                drawer.closeDrawer(GravityCompat.START);
+                binding.appBar.mainToolbar.setTitle(getResources().getString(R.string.history));
+                binding.drawerLayout.closeDrawer(GravityCompat.START);
                 break;
             case R.id.nav_castles:
                 initViewPager(TYPE_CASTLE);
-                mToolbar.setTitle(getResources().getString(R.string.castle));
-                drawer.closeDrawer(GravityCompat.START);
+                binding.appBar.mainToolbar.setTitle(getResources().getString(R.string.castle));
+                binding.drawerLayout.closeDrawer(GravityCompat.START);
                 break;
             case R.id.nav_night:
                 boolean isChecked = switchCompat.isChecked();
