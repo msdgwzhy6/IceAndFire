@@ -3,10 +3,13 @@ package com.southernbox.inf.adapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.text.TextUtils;
 
+import com.southernbox.inf.entity.TabDTO;
 import com.southernbox.inf.fragment.MainFragment;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by SouthernBox on 2016/3/27.
@@ -16,14 +19,14 @@ import java.util.ArrayList;
 public class MainFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
     private ArrayList<MainFragment> fragments;
-    private String[] titles;
+    private List<TabDTO> tabList;
 
     public MainFragmentPagerAdapter(FragmentManager fm,
                                     ArrayList<MainFragment> fragments,
-                                    String[] titles) {
+                                    List<TabDTO> tabList) {
         super(fm);
         this.fragments = fragments;
-        this.titles = titles;
+        this.tabList = tabList;
     }
 
     @Override
@@ -38,6 +41,10 @@ public class MainFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return titles[position];
+        if (!TextUtils.isEmpty(tabList.get(position).getTitle())) {
+            return tabList.get(position).getTitle();
+        } else {
+            return "";
+        }
     }
 }

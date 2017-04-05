@@ -62,7 +62,6 @@ public class MainActivity extends BaseActivity
     private final static String TYPE_HISTORY = "history";
     private final static String TYPE_CASTLE = "castle";
 
-    private String[] tabTitles;
     private List<TabDTO> tabList;
     private ArrayList<MainFragment> fragmentList = new ArrayList<>();
 
@@ -238,7 +237,7 @@ public class MainActivity extends BaseActivity
             initFragments();
             binding.appBar.viewPager.setAdapter(new MainFragmentPagerAdapter(
                     getSupportFragmentManager(),
-                    fragmentList, tabTitles));
+                    fragmentList, tabList));
             binding.appBar.tabLayout.setupWithViewPager(binding.appBar.viewPager);
         }
     }
@@ -247,11 +246,8 @@ public class MainActivity extends BaseActivity
      * 初始化fragment
      */
     private void initFragments() {
-        int size = tabList.size();
-        tabTitles = new String[size];
-        for (int i = 0; i < size; i++) {
-            TabDTO tab = tabList.get(i);
-            tabTitles[i] = tab.getTitle();
+        fragmentList.clear();
+        for (TabDTO tab : tabList) {
             MainFragment fragment = MainFragment
                     .newInstance(tab.getFirstType(), tab.getSecondType());
             fragmentList.add(fragment);
