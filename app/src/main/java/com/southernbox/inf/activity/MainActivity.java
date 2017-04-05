@@ -62,6 +62,7 @@ public class MainActivity extends BaseActivity
     private final static String TYPE_HISTORY = "history";
     private final static String TYPE_CASTLE = "castle";
 
+    private static String currentFirstType = TYPE_PERSON;
     private List<TabDTO> tabList;
     private ArrayList<MainFragment> fragmentList = new ArrayList<>();
 
@@ -76,7 +77,7 @@ public class MainActivity extends BaseActivity
         initDrawerLayout();
         initNavigationView();
         initRefreshLayout();
-        initViewPager(TYPE_PERSON);
+        initViewPager(currentFirstType);
     }
 
     /**
@@ -463,23 +464,35 @@ public class MainActivity extends BaseActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_person:
-                initViewPager(TYPE_PERSON);
-                binding.appBar.mainToolbar.setTitle(getResources().getString(R.string.person));
+                if (!TYPE_PERSON.equals(currentFirstType)) {
+                    currentFirstType = TYPE_PERSON;
+                    initViewPager(currentFirstType);
+                    binding.appBar.mainToolbar.setTitle(getResources().getString(R.string.person));
+                }
                 binding.drawerLayout.closeDrawer(GravityCompat.START);
                 break;
             case R.id.nav_house:
-                initViewPager(TYPE_HOUSE);
-                binding.appBar.mainToolbar.setTitle(getResources().getString(R.string.house));
+                if (!TYPE_HOUSE.equals(currentFirstType)) {
+                    currentFirstType = TYPE_HOUSE;
+                    initViewPager(currentFirstType);
+                    binding.appBar.mainToolbar.setTitle(getResources().getString(R.string.house));
+                }
                 binding.drawerLayout.closeDrawer(GravityCompat.START);
                 break;
             case R.id.nav_history:
-                initViewPager(TYPE_HISTORY);
-                binding.appBar.mainToolbar.setTitle(getResources().getString(R.string.history));
+                if (!TYPE_HISTORY.equals(currentFirstType)) {
+                    currentFirstType = TYPE_HISTORY;
+                    initViewPager(currentFirstType);
+                    binding.appBar.mainToolbar.setTitle(getResources().getString(R.string.history));
+                }
                 binding.drawerLayout.closeDrawer(GravityCompat.START);
                 break;
             case R.id.nav_castles:
-                initViewPager(TYPE_CASTLE);
-                binding.appBar.mainToolbar.setTitle(getResources().getString(R.string.castle));
+                if (!TYPE_CASTLE.equals(currentFirstType)) {
+                    currentFirstType = TYPE_CASTLE;
+                    initViewPager(currentFirstType);
+                    binding.appBar.mainToolbar.setTitle(getResources().getString(R.string.castle));
+                }
                 binding.drawerLayout.closeDrawer(GravityCompat.START);
                 break;
             case R.id.nav_night:
