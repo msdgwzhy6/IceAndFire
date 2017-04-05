@@ -15,27 +15,39 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SwitchCompat;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.southernbox.inf.R;
+import com.southernbox.inf.adapter.MainFragmentPagerAdapter;
 import com.southernbox.inf.databinding.ActivityMainBinding;
 import com.southernbox.inf.entity.ContentDTO;
 import com.southernbox.inf.entity.TabDTO;
-import com.southernbox.inf.pager.MainViewPager;
+import com.southernbox.inf.fragment.MainFragment;
 import com.southernbox.inf.util.DayNightHelper;
+import com.southernbox.inf.util.DisplayUtil;
+import com.southernbox.inf.util.RequestServes;
+import com.southernbox.inf.util.ServerAPI;
 import com.southernbox.inf.util.ToastUtil;
 import com.southernbox.inf.widget.MaterialSearchView.MaterialSearchView;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created SouthernBox on 2016/3/27.
@@ -50,9 +62,11 @@ public class MainActivity extends BaseActivity
     private final static String TYPE_HISTORY = "history";
     private final static String TYPE_CASTLE = "castle";
 
-    private SwitchCompat switchCompat;
-    private MainViewPager mViewPager;
+    private String[] tabTitles;
+    private List<TabDTO> tabList;
+    private ArrayList<MainFragment> fragmentList = new ArrayList<>();
 
+    private SwitchCompat switchCompat;
     private ActivityMainBinding binding;
 
     @Override
@@ -62,6 +76,7 @@ public class MainActivity extends BaseActivity
         initToolbar();
         initDrawerLayout();
         initNavigationView();
+        initRefreshLayout();
         initViewPager(TYPE_PERSON);
     }
 
@@ -98,6 +113,7 @@ public class MainActivity extends BaseActivity
         binding.searchView.setOnSuggestionClickListener(new MaterialSearchView.OnSuggestionClickListener() {
             @Override
             public void onSuggestionClick(final String name) {
+                //延时以展示水波纹效果
                 binding.searchView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -169,6 +185,113 @@ public class MainActivity extends BaseActivity
                     refreshUI(true);
                 }
                 showAnimation();
+            }
+        });
+    }
+
+    /**
+     * 初始化SwipeRefreshLayout
+     */
+    private void initRefreshLayout() {
+        binding.appBar.swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimaryDark);
+        binding.appBar.swipeRefreshLayout.setProgressViewOffset(false,
+                DisplayUtil.getPx(mContext, -50), DisplayUtil.getPx(mContext, 20));
+        SwipeRefreshLayout.OnRefreshListener refreshListener =
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        loadFragmentData();
+                    }
+                };
+        binding.appBar.swipeRefreshLayout.setOnRefreshListener(refreshListener);
+    }
+
+    /**
+     * 初始化ViewPager
+     *
+     * @param firstType 要展示的类型
+     */
+    private void initViewPager(String firstType) {
+        tabList = mRealm.where(TabDTO.class)
+                .equalTo("firstType", firstType)
+                .findAll();
+        if (tabList != null && tabList.size() > 0) {
+            //滑动时禁用SwipeRefreshLayout
+            binding.appBar.viewPager.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    int action = motionEvent.getAction();
+                    switch (action) {
+                        case MotionEvent.ACTION_DOWN:// 经测试，ViewPager的DOWN事件不会被分发下来
+                        case MotionEvent.ACTION_MOVE:
+                            binding.appBar.swipeRefreshLayout.setEnabled(false);
+                            break;
+                        case MotionEvent.ACTION_UP:
+                        case MotionEvent.ACTION_CANCEL:
+                            binding.appBar.swipeRefreshLayout.setEnabled(true);
+                            break;
+                    }
+                    return false;
+                }
+            });
+
+            initFragments();
+            binding.appBar.viewPager.setAdapter(new MainFragmentPagerAdapter(
+                    getSupportFragmentManager(),
+                    fragmentList, tabTitles));
+            binding.appBar.tabLayout.setupWithViewPager(binding.appBar.viewPager);
+        }
+    }
+
+    /**
+     * 初始化fragment
+     */
+    private void initFragments() {
+        int size = tabList.size();
+        tabTitles = new String[size];
+        for (int i = 0; i < size; i++) {
+            TabDTO tab = tabList.get(i);
+            tabTitles[i] = tab.getTitle();
+            MainFragment fragment = MainFragment
+                    .newInstance(tab.getFirstType(), tab.getSecondType());
+            fragmentList.add(fragment);
+        }
+    }
+
+    /**
+     * 加载网络数据
+     */
+    private void loadFragmentData() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(ServerAPI.BASE_URL)
+                //增加返回值为Gson的支持(以实体类返回)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        RequestServes requestServes = retrofit.create(RequestServes.class);
+        Call<List<ContentDTO>> call = requestServes.getContent();
+        call.enqueue(new Callback<List<ContentDTO>>() {
+            @Override
+            public void onResponse(Call<List<ContentDTO>> call,
+                                   retrofit2.Response<List<ContentDTO>> response) {
+                binding.appBar.swipeRefreshLayout.setRefreshing(false);
+                List<ContentDTO> list = response.body();
+                if (list != null) {
+                    //缓存到数据库
+                    mRealm.beginTransaction();
+                    mRealm.copyToRealmOrUpdate(list);
+                    mRealm.commitTransaction();
+                }
+                for (MainFragment fragment : fragmentList) {
+                    if (fragment.isAdded()) {
+                        fragment.showData();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<ContentDTO>> call, Throwable t) {
+                binding.appBar.swipeRefreshLayout.setRefreshing(false);
+                ToastUtil.show(mContext, "网络连接失败");
             }
         });
     }
@@ -265,7 +388,9 @@ public class MainActivity extends BaseActivity
         binding.navigationView.setItemIconTintList(
                 ContextCompat.getColorStateList(mContext, darkTextColor.resourceId));
         //更新ViewPagerUI
-        mViewPager.refreshUI();
+        for (MainFragment fragment : fragmentList) {
+            fragment.refreshUI();
+        }
 
         refreshStatusBar();
     }
@@ -320,16 +445,6 @@ public class MainActivity extends BaseActivity
         } else {
             ToastUtil.cancel();
             finish();
-        }
-    }
-
-    private void initViewPager(String firstType) {
-        List<TabDTO> tabList = mRealm.where(TabDTO.class)
-                .equalTo("firstType", firstType)
-                .findAll();
-        if (tabList != null && tabList.size() > 0) {
-            mViewPager = new MainViewPager(this, tabList);
-            mViewPager.initData();
         }
     }
 
