@@ -76,8 +76,7 @@ public class MainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View rootView = LayoutInflater.from(mContext)
-                .inflate(R.layout.fragment_main, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         initView(rootView);
         showData();
         return rootView;
