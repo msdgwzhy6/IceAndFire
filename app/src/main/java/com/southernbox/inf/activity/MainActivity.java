@@ -175,6 +175,7 @@ public class MainActivity extends BaseActivity
         switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                showAnimation();
                 if (b) {
                     mDayNightHelper.setMode(DayNightHelper.DayNight.NIGHT);
                     setTheme(R.style.NightTheme);
@@ -184,7 +185,6 @@ public class MainActivity extends BaseActivity
                     setTheme(R.style.DayTheme);
                     refreshUI(true);
                 }
-                showAnimation();
             }
         });
     }

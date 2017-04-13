@@ -127,8 +127,10 @@ public class MainFragment extends Fragment {
                 ViewGroup childView = (ViewGroup) binding.recyclerView.getChildAt(position);
                 ItemListBinding itemListBinding = DataBindingUtil.bind(childView);
                 itemListBinding.llContent.setBackgroundResource(colorBackground.resourceId);
-                itemListBinding.tvName.setTextColor(ContextCompat.getColor(mContext, darkTextColor.resourceId));
-                itemListBinding.tvDesc.setTextColor(ContextCompat.getColor(mContext, darkTextColor.resourceId));
+                itemListBinding.tvName.setTextColor(
+                        ContextCompat.getColor(mContext, darkTextColor.resourceId));
+                itemListBinding.tvDesc.setTextColor(
+                        ContextCompat.getColor(mContext, darkTextColor.resourceId));
             }
             //让 RecyclerView 缓存在 Pool 中的 Item 失效
             Class<RecyclerView> recyclerViewClass = RecyclerView.class;
