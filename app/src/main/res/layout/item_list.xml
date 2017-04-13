@@ -6,7 +6,6 @@
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
     android:foreground="?attr/selectableItemBackground"
-    android:gravity="center"
     app:cardElevation="5dp">
 
     <LinearLayout

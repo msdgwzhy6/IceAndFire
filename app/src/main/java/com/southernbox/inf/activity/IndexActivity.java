@@ -67,7 +67,7 @@ public class IndexActivity extends BaseActivity {
 
         });
         SystemClock.sleep(200);
-        binding.ivIndex.startAnimation(animation);
+        binding.tvIndex.startAnimation(animation);
         loadTabData();
         loadContentData();
     }
@@ -152,12 +152,12 @@ public class IndexActivity extends BaseActivity {
 
     private void netError() {
         ToastUtil.show(mContext, "网络连接失败，请点击重试");
-        binding.ivIndex.setOnClickListener(new View.OnClickListener() {
+        binding.tvIndex.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 loadTabData();
                 loadContentData();
-                binding.ivIndex.setClickable(false);
+                binding.tvIndex.setClickable(false);
             }
         });
     }

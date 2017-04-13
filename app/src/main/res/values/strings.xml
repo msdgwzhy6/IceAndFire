@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">冰与火世界</string>
+    <string name="valar_morghulis">Valar Morghulis</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -13,6 +14,5 @@
     <string name="castle">城堡</string>
     <string name="night_mode">夜间模式</string>
 
-    <!--MaterialSearchView-->
     <string name="search_hint">Search</string>
 </resources>
