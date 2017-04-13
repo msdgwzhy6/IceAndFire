@@ -222,7 +222,7 @@ public class MainActivity extends BaseActivity
                 public boolean onTouch(View view, MotionEvent motionEvent) {
                     int action = motionEvent.getAction();
                     switch (action) {
-                        case MotionEvent.ACTION_DOWN:// 经测试，ViewPager的DOWN事件不会被分发下来
+                        case MotionEvent.ACTION_DOWN:
                         case MotionEvent.ACTION_MOVE:
                             binding.appBar.swipeRefreshLayout.setEnabled(false);
                             break;

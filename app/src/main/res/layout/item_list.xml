@@ -1,59 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="10dp"
-    android:foreground="?attr/selectableItemBackground"
-    app:cardElevation="5dp">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
-        android:id="@+id/ll_content"
+    <data>
+
+        <variable
+            name="content"
+            type="com.southernbox.inf.entity.ContentDTO" />
+
+        <variable
+            name="clickListener"
+            type="android.view.View.OnClickListener" />
+
+    </data>
+
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorBackground"
-        android:orientation="vertical">
-
-        <ImageView
-            android:id="@+id/iv_img"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_gravity="center_horizontal"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            tools:ignore="ContentDescription" />
+        android:layout_margin="10dp"
+        android:foreground="?attr/selectableItemBackground"
+        android:onClick="@{clickListener}"
+        app:cardElevation="5dp">
 
         <LinearLayout
+            android:id="@+id/ll_content"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:paddingBottom="4dp"
-            android:paddingEnd="8dp"
-            android:paddingStart="8dp"
-            android:paddingTop="4dp">
+            android:layout_height="wrap_content"
+            android:background="?attr/colorBackground"
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tv_name"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:textColor="?attr/darkTextColor"
-                android:textSize="20sp"
-                tools:text="韦德" />
+            <ImageView
+                android:id="@+id/iv_img"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_gravity="center_horizontal"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                app:imageUrl="@{content.img}"
+                tools:ignore="ContentDescription" />
 
-            <TextView
-                android:id="@+id/tv_desc"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:maxLines="1"
-                android:textColor="?attr/darkTextColor"
-                android:textSize="12sp"
-                tools:text="MVP" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingBottom="4dp"
+                android:paddingEnd="8dp"
+                android:paddingStart="8dp"
+                android:paddingTop="4dp">
+
+                <TextView
+                    android:id="@+id/tv_name"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:text="@{content.name}"
+                    android:textColor="?attr/darkTextColor"
+                    android:textSize="20sp"
+                    tools:text="韦德" />
+
+                <TextView
+                    android:id="@+id/tv_desc"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:maxLines="1"
+                    android:text="@{content.intro}"
+                    android:textColor="?attr/darkTextColor"
+                    android:textSize="12sp"
+                    tools:text="MVP" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
-    </LinearLayout>
+    </android.support.v7.widget.CardView>
 
-</android.support.v7.widget.CardView>
+</layout>

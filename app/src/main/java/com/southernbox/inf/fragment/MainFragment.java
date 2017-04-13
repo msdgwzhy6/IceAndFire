@@ -3,6 +3,7 @@ package com.southernbox.inf.fragment;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,11 +14,11 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import com.southernbox.inf.R;
 import com.southernbox.inf.adapter.MainAdapter;
+import com.southernbox.inf.databinding.FragmentMainBinding;
+import com.southernbox.inf.databinding.ItemListBinding;
 import com.southernbox.inf.entity.ContentDTO;
 
 import java.lang.reflect.Field;
@@ -34,14 +35,14 @@ import io.realm.RealmConfiguration;
  */
 
 public class MainFragment extends Fragment {
+
     private Context mContext;
     private String firstType;
     private String secondType;
     private MainAdapter adapter;
     private List<ContentDTO> contentList = new ArrayList<>();
     private Realm mRealm;
-    private FrameLayout flContent;
-    private RecyclerView mRecyclerView;
+    private FragmentMainBinding binding;
 
     /**
      * 获取对应的首页Fragment
@@ -77,17 +78,16 @@ public class MainFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        initView(rootView);
+        binding = DataBindingUtil.bind(rootView);
+        initView();
         showData();
         return rootView;
     }
 
-    private void initView(View rootView) {
-        flContent = (FrameLayout) rootView.findViewById(R.id.fl_content);
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+    private void initView() {
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         adapter = new MainAdapter(getActivity(), contentList);
-        mRecyclerView.setAdapter(adapter);
+        binding.recyclerView.setAdapter(adapter);
     }
 
     /**
@@ -120,29 +120,26 @@ public class MainFragment extends Fragment {
             theme.resolveAttribute(R.attr.darkTextColor, darkTextColor, true);
 
             //更新背景颜色
-            flContent.setBackgroundResource(pagerBackground.resourceId);
+            binding.flContent.setBackgroundResource(pagerBackground.resourceId);
             //更新Item的背景及字体颜色
-            int childCount = mRecyclerView.getChildCount();
+            int childCount = binding.recyclerView.getChildCount();
             for (int position = 0; position < childCount; position++) {
-                ViewGroup childView = (ViewGroup) mRecyclerView.getChildAt(position);
-                View vContent = childView.findViewById(R.id.ll_content);
-                vContent.setBackgroundResource(colorBackground.resourceId);
-                TextView tvName = (TextView) childView.findViewById(R.id.tv_name);
-                tvName.setTextColor(ContextCompat.getColor(mContext, darkTextColor.resourceId));
-                TextView tvDesc = (TextView) childView.findViewById(R.id.tv_desc);
-                tvDesc.setTextColor(ContextCompat.getColor(mContext, darkTextColor.resourceId));
+                ViewGroup childView = (ViewGroup) binding.recyclerView.getChildAt(position);
+                ItemListBinding itemListBinding = DataBindingUtil.bind(childView);
+                itemListBinding.llContent.setBackgroundResource(colorBackground.resourceId);
+                itemListBinding.tvName.setTextColor(ContextCompat.getColor(mContext, darkTextColor.resourceId));
+                itemListBinding.tvDesc.setTextColor(ContextCompat.getColor(mContext, darkTextColor.resourceId));
             }
-
             //让 RecyclerView 缓存在 Pool 中的 Item 失效
             Class<RecyclerView> recyclerViewClass = RecyclerView.class;
             try {
                 Field declaredField = recyclerViewClass.getDeclaredField("mRecycler");
                 declaredField.setAccessible(true);
                 Method declaredMethod = Class.forName(RecyclerView.Recycler.class.getName())
-                        .getDeclaredMethod("clear", new Class[0]);
+                        .getDeclaredMethod("clear");
                 declaredMethod.setAccessible(true);
-                declaredMethod.invoke(declaredField.get(mRecyclerView), new Object[0]);
-                RecyclerView.RecycledViewPool recycledViewPool = mRecyclerView.getRecycledViewPool();
+                declaredMethod.invoke(declaredField.get(binding.recyclerView));
+                RecyclerView.RecycledViewPool recycledViewPool = binding.recyclerView.getRecycledViewPool();
                 recycledViewPool.clear();
             } catch (Exception e) {
                 e.printStackTrace();
