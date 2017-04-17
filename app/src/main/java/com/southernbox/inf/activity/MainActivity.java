@@ -35,7 +35,6 @@ import com.southernbox.inf.entity.ContentDTO;
 import com.southernbox.inf.entity.TabDTO;
 import com.southernbox.inf.fragment.MainFragment;
 import com.southernbox.inf.util.DayNightHelper;
-import com.southernbox.inf.util.DisplayUtil;
 import com.southernbox.inf.util.RequestServes;
 import com.southernbox.inf.util.ServerAPI;
 import com.southernbox.inf.util.ToastUtil;
@@ -194,8 +193,6 @@ public class MainActivity extends BaseActivity
      */
     private void initRefreshLayout() {
         binding.appBar.swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimaryDark);
-        binding.appBar.swipeRefreshLayout.setProgressViewOffset(false,
-                DisplayUtil.getPx(mContext, -50), DisplayUtil.getPx(mContext, 20));
         SwipeRefreshLayout.OnRefreshListener refreshListener =
                 new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
