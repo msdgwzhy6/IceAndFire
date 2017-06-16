@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
@@ -44,8 +45,8 @@ public class IndexActivity extends BaseActivity {
      * 显示启动页动画
      */
     private void showAnimation() {
-        Animation animation = AnimationUtils.loadAnimation(this,
-                R.anim.anim_valar_morghulis);
+        Animation animation = AnimationUtils
+                .loadAnimation(this, R.anim.anim_valar_morghulis);
         animation.setAnimationListener(new AnimationListener() {
 
             @Override
@@ -79,8 +80,8 @@ public class IndexActivity extends BaseActivity {
         Call<List<TabDTO>> call = requestServes.getTab();
         call.enqueue(new Callback<List<TabDTO>>() {
             @Override
-            public void onResponse(Call<List<TabDTO>> call,
-                                   retrofit2.Response<List<TabDTO>> response) {
+            public void onResponse(@NonNull Call<List<TabDTO>> call,
+                                   @NonNull retrofit2.Response<List<TabDTO>> response) {
                 List<TabDTO> tabList = response.body();
                 if (tabList != null) {
                     //缓存到数据库
@@ -93,7 +94,7 @@ public class IndexActivity extends BaseActivity {
             }
 
             @Override
-            public void onFailure(Call<List<TabDTO>> call, Throwable t) {
+            public void onFailure(@NonNull Call<List<TabDTO>> call, @NonNull Throwable t) {
                 List<TabDTO> tabList = mRealm.where(TabDTO.class).findAll();
                 //有缓存数据可正常跳转，没有则提示点击重试
                 if (tabList != null) {
@@ -114,8 +115,8 @@ public class IndexActivity extends BaseActivity {
         Call<List<ContentDTO>> call = requestServes.getContent();
         call.enqueue(new Callback<List<ContentDTO>>() {
             @Override
-            public void onResponse(Call<List<ContentDTO>> call,
-                                   retrofit2.Response<List<ContentDTO>> response) {
+            public void onResponse(@NonNull Call<List<ContentDTO>> call,
+                                   @NonNull retrofit2.Response<List<ContentDTO>> response) {
                 List<ContentDTO> contentList = response.body();
                 if (contentList != null) {
                     //缓存到数据库
@@ -128,7 +129,7 @@ public class IndexActivity extends BaseActivity {
             }
 
             @Override
-            public void onFailure(Call<List<ContentDTO>> call, Throwable t) {
+            public void onFailure(@NonNull Call<List<ContentDTO>> call, @NonNull Throwable t) {
                 List<ContentDTO> contentList = mRealm.where(ContentDTO.class).findAll();
                 //有缓存数据可正常跳转，没有则提示点击重试
                 if (contentList != null) {
@@ -144,8 +145,7 @@ public class IndexActivity extends BaseActivity {
 
     private void goMainPage() {
         if (animationComplete && loadTabComplete && loadContentComplete) {
-            startActivity(new Intent(IndexActivity.this,
-                    MainActivity.class));
+            startActivity(new Intent(IndexActivity.this, MainActivity.class));
             finish();
         }
     }
